@@ -20,8 +20,13 @@ TileMap::TileMap(const string &levelFile, const glm::vec2 &minCoords, ShaderProg
 
 TileMap::~TileMap()
 {
-	if(map != NULL)
+	if (map != NULL) {
 		delete map;
+	}
+	if (gridMap != NULL) {
+		delete gridMap;
+	}
+	
 }
 
 
@@ -34,11 +39,42 @@ void TileMap::render() const
 	glEnableVertexAttribArray(texCoordLocation);
 	glDrawArrays(GL_TRIANGLES, 0, 6 * mapSize.x * mapSize.y);
 	glDisable(GL_TEXTURE_2D);
+
 }
 
 void TileMap::free()
 {
 	glDeleteBuffers(1, &vbo);
+}
+
+void TileMap::addEntity(int x, int y, Entity* ent)
+{
+	gridMap[x * mapSize.x + y] = ent;
+}
+void TileMap::moveEntity(glm::ivec2 src, glm::ivec2 dest) {
+	gridMap[dest.x * mapSize.x + dest.y] = gridMap[src.x * mapSize.x + src.y];
+	gridMap[src.x * mapSize.x + src.y] = NULL;
+}
+
+Entity* TileMap::getEntity(int x, int y, bool& success) {
+	//string s = typeid(gridMap[x * mapSize.x + y]).name();
+	string s = "X: " + to_string(x) + "Y: " + to_string(y) + "\n";
+	OutputDebugStringA(s.c_str());
+
+	/*if (x<0 || x>mapSize.x || y<0 || y>mapSize.y)
+	{
+		success = true;
+		return NULL;
+	}else*/
+	if (gridMap[x*mapSize.x+y] == NULL)
+	{
+		success = false;
+		return NULL;
+	}
+	else {
+		success = true;
+		return gridMap[x * mapSize.x + y];
+	}
 }
 
 bool TileMap::loadLevel(const string &levelFile)
@@ -74,10 +110,12 @@ bool TileMap::loadLevel(const string &levelFile)
 	tileTexSize = glm::vec2(1.f / tilesheetSize.x, 1.f / tilesheetSize.y);
 	
 	map = new int[mapSize.x * mapSize.y];
+	gridMap = new Entity*[mapSize.x * mapSize.y];
 	for(int j=0; j<mapSize.y; j++)
 	{
 		for(int i=0; i<mapSize.x; i++)
 		{
+			
 			fin.get(tile);
 			if(tile == ' ')
 				map[j*mapSize.x+i] = 0;
@@ -88,6 +126,15 @@ bool TileMap::loadLevel(const string &levelFile)
 #ifndef _WIN32
 		fin.get(tile);
 #endif
+	}
+
+	gridMap = new Entity * [glutGet(GLUT_WINDOW_WIDTH)/blockSize * glutGet(GLUT_WINDOW_HEIGHT)/blockSize];
+	for (int j = 0; j < mapSize.y; j++)
+	{
+		for (int i = 0; i < mapSize.x; i++)
+		{
+			gridMap[j * mapSize.x + i] = NULL;
+		}
 	}
 	fin.close();
 	

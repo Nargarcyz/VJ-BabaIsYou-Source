@@ -16,16 +16,18 @@ enum PlayerAnims
 	STAND_LEFT, STAND_RIGHT, MOVE_LEFT, MOVE_RIGHT
 };
 
+string Player::getInfo()
+{
+	string info = "Player Type: " + to_string(type)+ "\n -isStop = " + std::to_string(isStop) + "\n - bJumping = " + std::to_string(bJumping) + "\n - bMoving = " + std::to_string(bMoving);
+	return info;
+}
 
 void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram, const glm::ivec2& spriteSize)
 {
 	test = false;
-	bJumping = false;
-	bMoving = false;
-	fMoveSpeed = 0.01f;
 	fMoveFraction = 0.f;
 	moveDestination = glm::ivec2(NULL, NULL);
-
+	
 	this->spriteSize = spriteSize;
 	//spritesheet.loadFromFile("images/bub.png", TEXTURE_PIXEL_FORMAT_RGBA);
 	spritesheet.loadFromFile(spriteFile, TEXTURE_PIXEL_FORMAT_RGBA);
@@ -53,11 +55,48 @@ void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram, co
 	sprite->setPosition(glm::vec2(float(tileMapDispl.x + posPlayer.x), float(tileMapDispl.y + posPlayer.y)));
 	
 }
-
-void Player::changeSprite(string file, glm::vec2 coords)
+bool Player::hasCollision()
 {
-	spriteFile = file;
-	spriteTCoords = coords;
+	return isStop;
+}
+
+bool Player::isMoving()
+{
+	return bMoving;
+}
+
+void Player::setCollision(bool collision)
+{
+	isStop = collision;
+}
+
+glm::ivec2 Player::getGridPos()
+{
+	return gridPos;
+}
+
+void Player::setGridPos(glm::ivec2 pos)
+{
+	gridPos = pos;
+}
+
+void Player::changePlayerType(PlayerType type)
+{
+	this->type = type;
+	switch (type)
+	{
+	case Baba:
+		spriteFile = "images/bub.png";
+		spriteTCoords = glm::vec2(.25f, .25f);
+		break;
+	case Wall:
+		spriteFile = "images/Wall.png";
+		spriteTCoords = glm::vec2(1, 1);
+		break;
+	default:
+		break;
+	}
+	
 }
 
 void Player::update(int deltaTime)
@@ -65,9 +104,9 @@ void Player::update(int deltaTime)
 	//glm::ivec2 spriteSize = glm::ivec2(32, 32);
 	sprite->update(deltaTime);
 
-	/*string msg = "Pos X"+to_string(posPlayer.x) + "Pos Y" + to_string(posPlayer.y)+"\n";
-	OutputDebugStringA(msg.c_str());/
-	msg = "Pos X" + to_string((posPlayer.x)/map->getTileSize()) + "Pos Y" + to_string((posPlayer.y) / map->getTileSize()) + "\n";
+	/*string msg = "\nTileSize"+to_string(map->getTileSize())+"Pos X"+to_string(posPlayer.x) + "Pos Y" + to_string(posPlayer.y)+"\nGridPos X" + to_string(gridPos.x) + "GridPos Y" + to_string(gridPos.y) + "\n";
+	OutputDebugStringA(msg.c_str());*/
+	/*msg = "Pos X" + to_string((posPlayer.x)/map->getTileSize()) + "Pos Y" + to_string((posPlayer.y) / map->getTileSize()) + "\n";
 	OutputDebugStringA(msg.c_str());*/
 	if (bMoving) {
 		if (fMoveFraction < 1)
@@ -83,118 +122,44 @@ void Player::update(int deltaTime)
 			bMoving = false;
 		}
 	}
-	else
-	{
-		if (Game::instance().getSpecialKey(GLUT_KEY_LEFT))
-		{
-			
-			/*if(sprite->animation() != MOVE_LEFT)
-				sprite->changeAnimation(MOVE_LEFT);
-			posPlayer.x -= 2;
-			if(map->collisionMoveLeft(posPlayer, spriteSize))
-			{
-				posPlayer.x += 2;
-				sprite->changeAnimation(STAND_LEFT);
-			}*/
-			/*glm::ivec2 mapPos = glm::ivec2((posPlayer.x) / map->getTileSize(), (posPlayer.y) / map->getTileSize());
-			MapEntity* foundEntity = posMap->getEntity(mapPos.x - 1, mapPos.y);
-			if (foundEntity->type == Property)
-			{
-				OutputDebugString(L"Property Found");
-				foundEntity->entity->setPosition(glm::ivec2(0, 0));
-				posMap->moveEntity(glm::ivec2(mapPos.x - 1, mapPos.y), glm::ivec2(mapPos.x - 2, mapPos.y));
-			}*/
-			moveDestination = posPlayer;
-			moveDestination.x -= map->getTileSize();
-			sprite->changeAnimation(STAND_LEFT);
-			bMoving = true;
-
-
-		}
-		else if (Game::instance().getSpecialKey(GLUT_KEY_RIGHT))
-		{
-			/*if (sprite->animation() != MOVE_RIGHT)
-				sprite->changeAnimation(MOVE_RIGHT);
-			posPlayer.x += 2;
-			if (map->collisionMoveRight(posPlayer, spriteSize))
-			{
-				posPlayer.x -= 2;
-				sprite->changeAnimation(STAND_RIGHT);
-			}*/
-
-			/*glm::ivec2 mapPos = glm::ivec2((posPlayer.x) / map->getTileSize(), (posPlayer.y) / map->getTileSize());
-			if (posMap->getEntity(mapPos.x + 1, mapPos.y)->type == Property)
-			{
-				OutputDebugString(L"Property Found");
-				posMap->getEntity(mapPos.x + 1, mapPos.y)->entity->setPosition(glm::ivec2(0, 0));
-
-			}*/
-			moveDestination = posPlayer;
-			moveDestination.x += map->getTileSize();
-			sprite->changeAnimation(STAND_RIGHT);
-			bMoving = true;
-		}
-		else if (Game::instance().getSpecialKey(GLUT_KEY_UP)) {
-			moveDestination = posPlayer;
-			moveDestination.y -= map->getTileSize();
-			sprite->changeAnimation(STAND_RIGHT);
-			bMoving = true;
-		}
-		else if (Game::instance().getSpecialKey(GLUT_KEY_DOWN)) {
-			moveDestination = posPlayer;
-			moveDestination.y += map->getTileSize();
-			sprite->changeAnimation(STAND_RIGHT);
-			bMoving = true;
-		}
-		else if (Game::instance().getKey(32))
-		{
-			test = !test;
-		}
-		/*else
-		{
-			if (sprite->animation() == MOVE_LEFT)
-				sprite->changeAnimation(STAND_LEFT);
-			else if (sprite->animation() == MOVE_RIGHT)
-				sprite->changeAnimation(STAND_RIGHT);
-		}
-
-		if (bJumping)
-		{
-			jumpAngle += JUMP_ANGLE_STEP;
-			if (jumpAngle == 180)
-			{
-				bJumping = false;
-				posPlayer.y = startY;
-			}
-			else
-			{
-				posPlayer.y = int(startY - 96 * sin(3.14159f * jumpAngle / 180.f));
-				if (!map->collisionMoveUp(posPlayer, spriteSize, &posPlayer.y)) {
-					if (jumpAngle > 90)
-						bJumping = !map->collisionMoveDown(posPlayer, spriteSize, &posPlayer.y);
-				}
-				else {
-					bJumping = false;
-				}
-
-			}
-		}
-		else
-		{
-			posPlayer.y += FALL_STEP;
-			if (map->collisionMoveDown(posPlayer, spriteSize, &posPlayer.y))
-			{
-				if (Game::instance().getSpecialKey(GLUT_KEY_UP))
-				{
-					bJumping = true;
-					jumpAngle = 0;
-					startY = posPlayer.y;
-				}
-			}
-		}*/
-
-		sprite->setPosition(glm::vec2(float(tileMapDispl.x + posPlayer.x), float(tileMapDispl.y + posPlayer.y)));
-	}
+	//else
+	//{
+	//	if (Game::instance().getSpecialKey(GLUT_KEY_LEFT))
+	//	{
+	//		moveDestination = posPlayer;
+	//		moveDestination.x -= spriteSize.x;//map->getTileSize();
+	//		gridPos.x -= 1;
+	//		sprite->changeAnimation(STAND_LEFT);
+	//		bMoving = true;
+	//	}
+	//	else if (Game::instance().getSpecialKey(GLUT_KEY_RIGHT))
+	//	{
+	//		moveDestination = posPlayer;
+	//		moveDestination.x += spriteSize.x;//map->getTileSize();
+	//		gridPos.x += 1;
+	//		sprite->changeAnimation(STAND_RIGHT);
+	//		bMoving = true;
+	//	}
+	//	else if (Game::instance().getSpecialKey(GLUT_KEY_UP)) {
+	//		moveDestination = posPlayer;
+	//		moveDestination.y -= spriteSize.x;//map->getTileSize();
+	//		gridPos.y -= 1;
+	//		sprite->changeAnimation(STAND_RIGHT);
+	//		bMoving = true;
+	//	}
+	//	else if (Game::instance().getSpecialKey(GLUT_KEY_DOWN)) {
+	//		moveDestination = posPlayer;
+	//		moveDestination.y += spriteSize.x;//map->getTileSize();
+	//		gridPos.y += 1;
+	//		sprite->changeAnimation(STAND_RIGHT);
+	//		bMoving = true;
+	//	}
+	//	else if (Game::instance().getKey(32))
+	//	{
+	//		test = !test;
+	//	}
+	//	sprite->setPosition(glm::vec2(float(tileMapDispl.x + posPlayer.x), float(tileMapDispl.y + posPlayer.y)));
+	//}
 
 }
 
@@ -203,15 +168,36 @@ void Player::render()
 	sprite->render();
 }
 
-void Player::setTileMap(TileMap *tileMap)
+void Player::movePlayer(glm::ivec2 increment)
 {
-	map = tileMap;
+	bMoving = true;
+	moveDestination = posPlayer + increment*spriteSize;
 }
 
-void Player::setPosition(const glm::vec2 &pos)
+//void Player::setTileMap(TileMap *tileMap)
+//{
+//	map = tileMap;
+//	//gridPos = glm::ivec2((posPlayer.x) / map->getTileSize(), (posPlayer.y) / map->getTileSize());
+//}
+
+void Player::setPosition(const glm::vec2 &pos, int tileSize)
 {
-	posPlayer = pos;
+	posPlayer = pos * glm::vec2(tileSize, tileSize);
+	gridPos.x = posPlayer.x / 24;
+	gridPos.y = posPlayer.y / 24;
+
+
 	sprite->setPosition(glm::vec2(float(tileMapDispl.x + posPlayer.x), float(tileMapDispl.y + posPlayer.y)));
+}
+
+glm::vec2 Player::getPosition()
+{
+	return posPlayer;
+}
+
+PlayerType Player::getPlayerType()
+{
+	return type;
 }
 
 

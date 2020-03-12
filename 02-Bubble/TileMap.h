@@ -2,13 +2,14 @@
 #define _TILE_MAP_INCLUDE
 
 
-#include <glm/glm.hpp>
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <vector>
+
 #include "Texture.h"
 #include "ShaderProgram.h"
+#include "Player.h"
+#include <typeinfo>
+#include <GL/glew.h>
+#include <GL/glut.h>
+
 
 
 // Class Tilemap is capable of loading a tile map from a text file in a very
@@ -30,6 +31,13 @@ public:
 	void render() const;
 	void free();
 	
+	void addEntity(int x, int y, Entity* ent);
+
+	void moveEntity(glm::ivec2 src, glm::ivec2 dest);
+
+	Entity* getEntity(int x, int y, bool& success);
+
+
 	int getTileSize() const { return tileSize; }
 	void getWallLocations(vector<glm::ivec2>& wallLocs);
 	bool collisionMoveLeft(const glm::ivec2 &pos, const glm::ivec2 &size) const;
@@ -50,6 +58,8 @@ private:
 	Texture tilesheet;
 	glm::vec2 tileTexSize;
 	int *map;
+	Entity** gridMap;
+
 
 };
 
