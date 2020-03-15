@@ -1,1 +1,10 @@
-﻿
+﻿  Scene.cpp
+d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(65,20): warning C4018: '<': signed/unsigned mismatch
+d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(159,22): warning C4018: '<': signed/unsigned mismatch
+d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(198,20): warning C4018: '<': signed/unsigned mismatch
+d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(229,20): warning C4018: '<': signed/unsigned mismatch
+SOIL.lib(image_DXT.obj) : warning LNK4099: PDB 'vc100.pdb' was not found with 'SOIL.lib(image_DXT.obj)' or at 'd:\Documents\Coding\VJ\VJ-BabaIsYou\Debug\vc100.pdb'; linking object as if no debug info
+SOIL.lib(image_helper.obj) : warning LNK4099: PDB 'vc100.pdb' was not found with 'SOIL.lib(image_helper.obj)' or at 'd:\Documents\Coding\VJ\VJ-BabaIsYou\Debug\vc100.pdb'; linking object as if no debug info
+SOIL.lib(SOIL.obj) : warning LNK4099: PDB 'vc100.pdb' was not found with 'SOIL.lib(SOIL.obj)' or at 'd:\Documents\Coding\VJ\VJ-BabaIsYou\Debug\vc100.pdb'; linking object as if no debug info
+SOIL.lib(stb_image_aug.obj) : warning LNK4099: PDB 'vc100.pdb' was not found with 'SOIL.lib(stb_image_aug.obj)' or at 'd:\Documents\Coding\VJ\VJ-BabaIsYou\Debug\vc100.pdb'; linking object as if no debug info
+  02-Bubble.vcxproj -> d:\Documents\Coding\VJ\VJ-BabaIsYou\Debug\02-Bubble.exe

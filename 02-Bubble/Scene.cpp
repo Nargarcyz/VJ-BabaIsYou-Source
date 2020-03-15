@@ -33,9 +33,19 @@ void Scene::init()
 	
 	map = TileMap::createTileMap("levels/level02.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
 	baba = new Player();
-	baba->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, glm::ivec2(24,24));
-	baba->setPosition(glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize(), INIT_PLAYER_Y_TILES * map->getTileSize()));
-	baba->setTileMap(map);
+	baba->changePlayerType(PlayerType::Baba);
+	baba->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, glm::ivec2(24, 24));
+	baba->setPosition(glm::vec2(INIT_PLAYER_X_TILES, INIT_PLAYER_Y_TILES), map->getTileSize());
+	map->addEntity(INIT_PLAYER_X_TILES, INIT_PLAYER_Y_TILES, (Entity*)baba);
+
+	bool success = false;
+	string msg;
+	Player* e = (Player*)map->getEntity(INIT_PLAYER_X_TILES, INIT_PLAYER_Y_TILES, success);
+	if (success)
+	{
+		msg = "Player Type Added: " + to_string(e->getPlayerType()) + "\n";
+		OutputDebugStringA(msg.c_str());
+	}
 
 	/*yaga = new Player();
 	yaga->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, glm::ivec2(24, 24));
@@ -55,11 +65,26 @@ void Scene::init()
 	for (int i = 0; i < wallLocs.size(); i++)
 	{
 		Player* wall = new Player();
-		wall->changeSprite("images/wall.png", glm::vec2(1, 1));
+		wall->changePlayerType(PlayerType::Wall);
 		wall->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, glm::ivec2(24, 24));
-		wall->setPosition(glm::vec2(wallLocs[i].x * map->getTileSize(), (wallLocs[i].y) * map->getTileSize()));
-		wall->setTileMap(map);
-		walls.push_back(*wall);
+		wall->setPosition(glm::vec2(wallLocs[i].x, (wallLocs[i].y)), map->getTileSize());
+		//wall->setTileMap(map);
+		map->addEntity(wallLocs[i].x, wallLocs[i].y, (Entity*)wall);
+		wall->setCollision(true);
+
+		msg = "Wall Added With Type: " + to_string(wall->getPlayerType()) + "\n";
+		OutputDebugStringA(msg.c_str());
+
+		bool success = false;
+		Player* e = (Player*)map->getEntity(wallLocs[i].x, wallLocs[i].y, success);
+		if (success)
+		{
+			msg = "Player Type Added: " + to_string(e->getPlayerType()) + "\t" + "Collisionable: " + to_string(e->hasCollision()) + "\n";
+			OutputDebugStringA(msg.c_str());
+			
+		}
+
+		walls.push_back(wall);
 
 	}
 	//possessed = baba;
@@ -88,20 +113,93 @@ void Scene::update(int deltaTime)
 		possessed = Possessable::Wall;
 	}
 
-	switch (possessed)
-	{
-	case Possessable::Baba:
-		baba->update(deltaTime);
-		break;
-	case Possessable::Wall:
-		for (int i = 0; i < walls.size(); i++)
-		{
-			walls[i].update(deltaTime);
-		}
-		break;
-	default:
-		break;
+
+	glm::ivec2 movementDirection = glm::ivec2(0, 0);
+	bool move = false;
+	if (Game::instance().getSpecialKey(GLUT_KEY_LEFT)) {
+		movementDirection = glm::ivec2(-1, 0);
+		move = true;
+		OutputDebugStringA("LEFT");
 	}
+	else if (Game::instance().getSpecialKey(GLUT_KEY_RIGHT)) {
+		movementDirection = glm::ivec2(1, 0);
+		move = true;
+		OutputDebugStringA("RIGHT");
+	}
+
+	glm::ivec2 testPosition = movementDirection;
+	if (move)
+	{
+		switch (possessed)
+		{
+
+		case Possessable::Baba:
+			//baba->update(deltaTime);
+			if (!baba->isMoving())
+			{
+				testPosition = movementDirection + baba->getGridPos();
+				bool success;
+				Entity* e;
+				e = map->getEntity(testPosition.x, testPosition.y, success);
+				if (success)
+				{
+					OutputDebugStringA("\nCollision\n");
+
+				}
+				else {
+					baba->move(movementDirection);
+					map->moveEntity(baba->getGridPos(), testPosition);
+					baba->setGridPos(testPosition);
+				}
+			}
+
+			break;
+		case Possessable::Wall: {
+			int ind;
+			for (int i = 0; i < walls.size(); i++)
+			{
+				if (glm::min(movementDirection.x,movementDirection.y)==-1)
+				{
+					ind = walls.size() - 1 + i;
+				}
+				else {
+					ind = i;
+				}
+				//walls[i].update(deltaTime);
+
+				if (!(walls[ind]->isMoving()))
+				{
+					testPosition = movementDirection + walls[ind]->getGridPos();
+					bool success;
+					Entity* e;
+					e = map->getEntity(testPosition.x, testPosition.y, success);
+					if (success)
+					{
+						//OutputDebugStringA(e->getInfo().c_str());
+
+					}
+					else {
+						walls[ind]->move(movementDirection);
+						map->moveEntity(walls[ind]->getGridPos(), testPosition);
+						walls[ind]->setGridPos(testPosition);
+					}
+				}
+			}
+			break;
+		}
+		default:
+			break;
+		}
+	}
+
+
+	baba->update(deltaTime);
+
+	for (int i = 0; i < walls.size(); i++)
+	{
+		walls[i]->update(deltaTime);
+	}
+
 	
 	//yaga->update(deltaTime);
 
@@ -130,7 +228,7 @@ void Scene::render()
 
 	for (int i = 0; i < walls.size(); i++)
 	{
-		walls[i].render();
+		walls[i]->render();
 	}
 	baba->render();
 }
