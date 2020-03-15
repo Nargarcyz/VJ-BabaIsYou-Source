@@ -5,8 +5,8 @@
 #include "Game.h"
 
 
-#define SCREEN_X 32
-#define SCREEN_Y 16
+#define SCREEN_X 0
+#define SCREEN_Y 0
 
 #define INIT_PLAYER_X_TILES 13
 #define INIT_PLAYER_Y_TILES 13
@@ -15,15 +15,12 @@
 Scene::Scene()
 {
 	map = NULL;
-	baba = NULL;
 }
 
 Scene::~Scene()
 {
 	if(map != NULL)
 		delete map;
-	if(baba != NULL)
-		delete baba;
 }
 
 
@@ -125,7 +122,17 @@ void Scene::update(int deltaTime)
 		movementDirection = glm::ivec2(1, 0);
 		move = true;
 		OutputDebugStringA("RIGHT");
+	}else if (Game::instance().getSpecialKey(GLUT_KEY_UP)) {
+		movementDirection = glm::ivec2(0, -1);
+		move = true;
+		OutputDebugStringA("UP");
 	}
+	else if (Game::instance().getSpecialKey(GLUT_KEY_DOWN)) {
+		movementDirection = glm::ivec2(0, 1);
+		move = true;
+		OutputDebugStringA("DOWN");
+	}
+
 
 	glm::ivec2 testPosition = movementDirection;
 	if (move)
@@ -160,10 +167,10 @@ void Scene::update(int deltaTime)
 			{
 				if (glm::min(movementDirection.x,movementDirection.y)==-1)
 				{
-					ind = walls.size() - 1 + i;
+					ind = i;
 				}
 				else {
-					ind = i;
+					ind = walls.size() - 1 - i;
 				}
 				//walls[i].update(deltaTime);
 
@@ -173,6 +180,9 @@ void Scene::update(int deltaTime)
 					bool success;
 					Entity* e;
 					e = map->getEntity(testPosition.x, testPosition.y, success);
+
+					
+
 					if (success)
 					{
 						//OutputDebugStringA(e->getInfo().c_str());

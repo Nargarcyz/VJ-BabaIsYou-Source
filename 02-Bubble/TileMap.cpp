@@ -32,6 +32,7 @@ TileMap::~TileMap()
 
 void TileMap::render() const
 {
+	glClearColor(0, .0f, 0,0);
 	glEnable(GL_TEXTURE_2D);
 	tilesheet.use();
 	glBindVertexArray(vao);
@@ -61,11 +62,12 @@ Entity* TileMap::getEntity(int x, int y, bool& success) {
 	string s = "X: " + to_string(x) + "Y: " + to_string(y) + "\n";
 	OutputDebugStringA(s.c_str());
 
-	/*if (x<0 || x>mapSize.x || y<0 || y>mapSize.y)
+	//if (x<0 || x>mapSize.x || y<0 || y>mapSize.y)
+	if (x<0 || (x>(glutGet(GLUT_WINDOW_WIDTH)-(glutGet(GLUT_WINDOW_WIDTH)%tileSize)) / tileSize) || y<0 || (y > (glutGet(GLUT_WINDOW_HEIGHT)-tileSize) / tileSize))
 	{
 		success = true;
 		return NULL;
-	}else*/
+	}else
 	if (gridMap[x * mapSize.x + y] == NULL)
 	{
 		success = false;
@@ -128,14 +130,19 @@ bool TileMap::loadLevel(const string& levelFile)
 #endif
 	}
 
-	gridMap = new Entity * [glutGet(GLUT_WINDOW_WIDTH) / blockSize * glutGet(GLUT_WINDOW_HEIGHT) / blockSize];
-	for (int j = 0; j < mapSize.y; j++)
+	gridMap = new Entity * [glutGet(GLUT_WINDOW_WIDTH) / tileSize * glutGet(GLUT_WINDOW_HEIGHT) / tileSize]{ NULL };
+	/*gridMap = new Entity * [mapSize.x * mapSize.y]{ NULL };*/
+	/*for (int j = 0; j < glutGet(GLUT_WINDOW_HEIGHT) / tileSize; j++)
 	{
-		for (int i = 0; i < mapSize.x; i++)
+		for (int i = 0; i < glutGet(GLUT_WINDOW_WIDTH) / tileSize; i++)
 		{
 			gridMap[j * mapSize.x + i] = NULL;
 		}
-	}
+	}*/
+	/*for (int i = 0; i < sizeof(gridMap); i++)
+	{
+		gridMap[i] = NULL;
+	}*/
 	fin.close();
 
 	return true;
