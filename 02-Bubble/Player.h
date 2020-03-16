@@ -9,15 +9,17 @@
 // Player is basically a Sprite that represents the player. As such it has
 // all properties it needs to track its movement, jumping, and collisions.
 
-enum PlayerType { Baba = 0, Wall = 1 };
+enum PlayerType { Baba_p = 0, Wall_p = 1 };
 
 
 class Player : public Entity
 {
 public:
-	string getInfo();
-	void changePlayerType(PlayerType type);
-	PlayerType getPlayerType();
+	Player();
+	Player(PlayerType type);
+	//string getInfo();
+	/*void changePlayerType(PlayerType type);
+	PlayerType getPlayerType();*/
 
 
 	bool test;

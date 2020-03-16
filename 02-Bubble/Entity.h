@@ -2,7 +2,7 @@
 #define _ENTITY_INCLUDE
 
 
-enum EntityType { User = 0, Name = 1, Operator = 2, Property = 3 };
+enum EntityType { User = 0, MoveBlock = 1 };
 
 #include "Sprite.h"
 #include <string>

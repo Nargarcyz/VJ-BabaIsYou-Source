@@ -57,15 +57,19 @@ void TileMap::moveEntity(glm::ivec2 src, glm::ivec2 dest) {
 	gridMap[src.x * mapSize.x + src.y] = NULL;
 }
 
-Entity* TileMap::getEntity(int x, int y, bool& success) {
+Entity* TileMap::getEntity(glm::ivec2 testPosition, bool& success, bool& outOfBounds) {
 	//string s = typeid(gridMap[x * mapSize.x + y]).name();
-	string s = "X: " + to_string(x) + "Y: " + to_string(y) + "\n";
+	int x = testPosition.x;
+	int y = testPosition.y;
+	string s = "\nChecking X: " + to_string(x) + "Y: " + to_string(y) + "\n";
 	OutputDebugStringA(s.c_str());
 
 	//if (x<0 || x>mapSize.x || y<0 || y>mapSize.y)
+	outOfBounds = false;
 	if (x<0 || (x>(glutGet(GLUT_WINDOW_WIDTH)-(glutGet(GLUT_WINDOW_WIDTH)%tileSize)) / tileSize) || y<0 || (y > (glutGet(GLUT_WINDOW_HEIGHT)-tileSize) / tileSize))
 	{
 		success = true;
+		outOfBounds = true;
 		return NULL;
 	}else
 	if (gridMap[x * mapSize.x + y] == NULL)

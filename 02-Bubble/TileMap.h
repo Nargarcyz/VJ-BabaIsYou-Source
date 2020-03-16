@@ -6,6 +6,7 @@
 #include "Texture.h"
 #include "ShaderProgram.h"
 #include "Player.h"
+#include "Movable.h"
 #include <typeinfo>
 #include <GL/glew.h>
 #include <GL/glut.h>
@@ -35,7 +36,9 @@ public:
 
 	void moveEntity(glm::ivec2 src, glm::ivec2 dest);
 
-	Entity* getEntity(int x, int y, bool& success);
+	Entity* getEntity(glm::ivec2 testPosition, bool& success, bool& outOfBounds);
+
+	//Entity* getEntity(int x, int y, bool& success);
 
 
 	int getTileSize() const { return tileSize; }

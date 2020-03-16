@@ -29,20 +29,27 @@ void Scene::init()
 	initShaders();
 	
 	map = TileMap::createTileMap("levels/level02.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
-	baba = new Player();
-	baba->changePlayerType(PlayerType::Baba);
+	baba = new Player(Baba_p);
+	//baba->changePlayerType(PlayerType::Baba);
 	baba->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, glm::ivec2(24, 24));
 	baba->setPosition(glm::vec2(INIT_PLAYER_X_TILES, INIT_PLAYER_Y_TILES), map->getTileSize());
 	map->addEntity(INIT_PLAYER_X_TILES, INIT_PLAYER_Y_TILES, (Entity*)baba);
+	
 
-	bool success = false;
+	bool success, outOfBounds = false;
 	string msg;
-	Player* e = (Player*)map->getEntity(INIT_PLAYER_X_TILES, INIT_PLAYER_Y_TILES, success);
-	if (success)
+	Player* e = (Player*)map->getEntity(glm::ivec2(INIT_PLAYER_X_TILES, INIT_PLAYER_Y_TILES), success, outOfBounds);
+	/*if (success)
 	{
 		msg = "Player Type Added: " + to_string(e->getPlayerType()) + "\n";
 		OutputDebugStringA(msg.c_str());
-	}
+	}*/
+
+	Movable* testIs = new Movable(Words::Relation,Relations::Is);
+	testIs->init(glm::ivec2(0, 0), texProgram, glm::ivec2(24, 24));
+	testIs->setPosition(glm::vec2(10,10), map->getTileSize());
+	map->addEntity(10,10, (Entity*)testIs);
+	movables.push_back(testIs);
 
 	/*yaga = new Player();
 	yaga->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, glm::ivec2(24, 24));
@@ -61,15 +68,15 @@ void Scene::init()
 	map->getWallLocations(wallLocs);
 	for (int i = 0; i < wallLocs.size(); i++)
 	{
-		Player* wall = new Player();
-		wall->changePlayerType(PlayerType::Wall);
+		Player* wall = new Player(Wall_p);
+		//wall->changePlayerType(PlayerType::Wall);
 		wall->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, glm::ivec2(24, 24));
 		wall->setPosition(glm::vec2(wallLocs[i].x, (wallLocs[i].y)), map->getTileSize());
 		//wall->setTileMap(map);
 		map->addEntity(wallLocs[i].x, wallLocs[i].y, (Entity*)wall);
 		wall->setCollision(true);
 
-		msg = "Wall Added With Type: " + to_string(wall->getPlayerType()) + "\n";
+		/*msg = "Wall Added With Type: " + to_string(wall->getPlayerType()) + "\n";
 		OutputDebugStringA(msg.c_str());
 
 		bool success = false;
@@ -79,7 +86,7 @@ void Scene::init()
 			msg = "Player Type Added: " + to_string(e->getPlayerType()) + "\t" + "Collisionable: " + to_string(e->hasCollision()) + "\n";
 			OutputDebugStringA(msg.c_str());
 			
-		}
+		}*/
 
 		walls.push_back(wall);
 
@@ -95,11 +102,16 @@ void Scene::init()
 	currentTime = 0.0f;
 }
 
+void checkRules() {
+
+}
+
 void Scene::update(int deltaTime)
 {
 	currentTime += deltaTime;
 	//possessed->update(deltaTime);
 
+	checkRules();
 
 	if (Game::instance().getSpecialKey(1))
 	{
@@ -116,21 +128,17 @@ void Scene::update(int deltaTime)
 	if (Game::instance().getSpecialKey(GLUT_KEY_LEFT)) {
 		movementDirection = glm::ivec2(-1, 0);
 		move = true;
-		OutputDebugStringA("LEFT");
 	}
 	else if (Game::instance().getSpecialKey(GLUT_KEY_RIGHT)) {
 		movementDirection = glm::ivec2(1, 0);
 		move = true;
-		OutputDebugStringA("RIGHT");
 	}else if (Game::instance().getSpecialKey(GLUT_KEY_UP)) {
 		movementDirection = glm::ivec2(0, -1);
 		move = true;
-		OutputDebugStringA("UP");
 	}
 	else if (Game::instance().getSpecialKey(GLUT_KEY_DOWN)) {
 		movementDirection = glm::ivec2(0, 1);
 		move = true;
-		OutputDebugStringA("DOWN");
 	}
 
 
@@ -145,12 +153,18 @@ void Scene::update(int deltaTime)
 			if (!baba->isMoving())
 			{
 				testPosition = movementDirection + baba->getGridPos();
-				bool success;
+				bool success, outOfBounds;
 				Entity* e;
-				e = map->getEntity(testPosition.x, testPosition.y, success);
-				if (success)
+				e = map->getEntity(testPosition, success, outOfBounds);
+				if (success && !outOfBounds)
 				{
 					OutputDebugStringA("\nCollision\n");
+					OutputDebugStringA(to_string(e->getEntityType()).c_str());
+					if (e->getEntityType() == MoveBlock)
+					{
+						OutputDebugStringA("\n\tPUSHING\n");
+						push(e, movementDirection);
+					}
 
 				}
 				else {
@@ -177,9 +191,9 @@ void Scene::update(int deltaTime)
 				if (!(walls[ind]->isMoving()))
 				{
 					testPosition = movementDirection + walls[ind]->getGridPos();
-					bool success;
+					bool success, outOfBounds;
 					Entity* e;
-					e = map->getEntity(testPosition.x, testPosition.y, success);
+					e = map->getEntity(testPosition, success, outOfBounds);
 
 					
 
@@ -210,6 +224,11 @@ void Scene::update(int deltaTime)
 		walls[i]->update(deltaTime);
 	}
 
+	for (int i = 0; i < movables.size(); i++)
+	{
+		movables[i]->update(deltaTime);
+	}
+
 	
 	//yaga->update(deltaTime);
 
@@ -219,6 +238,43 @@ void Scene::update(int deltaTime)
 	
 }
 
+//TODO: Fix increment not updating on next movement
+
+bool Scene::push(Entity* entity, glm::ivec2 direction)
+{	
+	bool success, outOfBounds;
+	Entity* e = map->getEntity(entity->getGridPos()+ direction, success, outOfBounds);
+	OutputDebugStringA("\nSuccess: ");
+	OutputDebugStringA(to_string(success).c_str());
+	OutputDebugStringA(" OutOfBounds: ");
+	OutputDebugStringA(to_string(outOfBounds).c_str());
+	OutputDebugStringA("\n");
+	string s = "Movement Direction X: " + to_string(direction.x) + "Y: " + to_string(direction.y) + "\n";
+	OutputDebugStringA(s.c_str());
+	if (success && !outOfBounds && !e->hasCollision())
+	{
+		OutputDebugStringA("Collision and may move");
+		if (push(e, direction)) {
+			map->moveEntity(entity->getGridPos(), entity->getGridPos() + direction);
+			entity->setGridPos(entity->getGridPos() + direction);
+			entity->move(direction);
+		}
+	}
+	else if (success && outOfBounds) {
+		OutputDebugStringA("Collision and out of bounds");
+		return false;
+	}
+	else if (!success){
+		OutputDebugStringA("No collision, moves right away\n");
+		map->moveEntity(entity->getGridPos(), entity->getGridPos()+direction);
+		entity->setGridPos(entity->getGridPos() + direction);
+		entity->move(direction);
+		string s = "Moves to X: " + to_string(entity->getGridPos().x) + "Y: " + to_string(entity->getGridPos().y) + "\n";
+		OutputDebugStringA(s.c_str());
+	}
+
+	return false;
+}
 
 
 void Scene::render()
@@ -240,8 +296,14 @@ void Scene::render()
 	{
 		walls[i]->render();
 	}
+	for (int i = 0; i < movables.size(); i++)
+	{
+		movables[i]->render();
+	}
 	baba->render();
 }
+
+
 
 void Scene::initShaders()
 {
