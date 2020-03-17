@@ -10,7 +10,7 @@
 #include <typeinfo>
 #include <GL/glew.h>
 #include <GL/glut.h>
-
+#include <math.h>
 
 
 // Class Tilemap is capable of loading a tile map from a text file in a very
@@ -61,6 +61,7 @@ private:
 	Texture tilesheet;
 	glm::vec2 tileTexSize;
 	int* map;
+	glm::ivec2 gridMapSize;
 	Entity** gridMap;
 
 

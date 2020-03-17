@@ -65,6 +65,19 @@ void Entity::setGridPos(glm::ivec2 pos)
 }
 
 
+//void Entity::move(glm::ivec2 increment)
+//{
+//	bMoving = true;
+//	moveDestination = posPlayer + increment * spriteSize;
+//}
+
+void Entity::move(glm::ivec2 newGridPos)
+{
+	bMoving = true;
+	moveDestination = posPlayer + newGridPos * spriteSize;
+	
+}
+
 void Entity::update(int deltaTime)
 {
 	//glm::ivec2 spriteSize = glm::ivec2(32, 32);
@@ -86,8 +99,31 @@ void Entity::update(int deltaTime)
 			fMoveFraction = 0.f;
 			moveDestination = glm::ivec2(NULL, NULL);
 			bMoving = false;
+			gridPos = posPlayer/spriteSize;
 		}
 	}
+
+	/*if (bMoving) {
+		if (fMoveFraction < 1)
+		{
+			fMoveFraction += deltaTime * fMoveSpeed;
+
+			posPlayer = glm::mix(posPlayer, moveDestination, fMoveFraction);
+			sprite->setPosition(glm::vec2(float(tileMapDispl.x + posPlayer.x), float(tileMapDispl.y + posPlayer.y)));
+		}
+		else {
+			fMoveFraction = 0.f;
+			moveDestination = glm::ivec2(NULL, NULL);
+			bMoving = false;
+		}
+	}*/
+
+
+
+
+
+
+
 	//else
 	//{
 	//	if (Game::instance().getSpecialKey(GLUT_KEY_LEFT))
@@ -132,6 +168,7 @@ void Entity::update(int deltaTime)
 void Entity::render()
 {
 	sprite->render();
+
 }
 
 EntityType Entity::getEntityType()
@@ -144,11 +181,7 @@ void Entity::setEntityType(EntityType type)
 	entityType = type;
 }
 
-void Entity::move(glm::ivec2 increment)
-{
-	bMoving = true;
-	moveDestination = posPlayer + increment * spriteSize;
-}
+
 
 //void Entity::setTileMap(TileMap *tileMap)
 //{

@@ -26,7 +26,7 @@ public:
 	void init();
 	void update(int deltaTime);
 	void render();
-	bool push(Entity* entity, glm::ivec2 direction);
+	bool push(Entity* entity, glm::ivec2& direction);
 
 private:
 	void initShaders();

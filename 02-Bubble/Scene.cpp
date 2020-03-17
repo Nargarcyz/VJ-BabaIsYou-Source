@@ -8,8 +8,8 @@
 #define SCREEN_X 0
 #define SCREEN_Y 0
 
-#define INIT_PLAYER_X_TILES 13
-#define INIT_PLAYER_Y_TILES 13
+#define INIT_PLAYER_X_TILES 15
+#define INIT_PLAYER_Y_TILES 15
 
 
 Scene::Scene()
@@ -73,6 +73,8 @@ void Scene::init()
 		wall->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, glm::ivec2(24, 24));
 		wall->setPosition(glm::vec2(wallLocs[i].x, (wallLocs[i].y)), map->getTileSize());
 		//wall->setTileMap(map);
+		string s = "\nWALL X: " + to_string(wallLocs[i].x) + "Y: " + to_string(wallLocs[i].y);
+		OutputDebugStringA(s.c_str());
 		map->addEntity(wallLocs[i].x, wallLocs[i].y, (Entity*)wall);
 		wall->setCollision(true);
 
@@ -152,15 +154,23 @@ void Scene::update(int deltaTime)
 			//baba->update(deltaTime);
 			if (!baba->isMoving())
 			{
+				OutputDebugStringA("\Baba grid pos:");
+				OutputDebugStringA(to_string(baba->getGridPos().x).c_str());
+				OutputDebugStringA(",");
+				OutputDebugStringA(to_string(baba->getGridPos().y).c_str());
+				OutputDebugStringA("\n");
 				testPosition = movementDirection + baba->getGridPos();
 				bool success, outOfBounds;
 				Entity* e;
 				e = map->getEntity(testPosition, success, outOfBounds);
-				if (success && !outOfBounds)
+				if (outOfBounds)
+				{
+					break;
+				}else if (success && e != NULL)
 				{
 					OutputDebugStringA("\nCollision\n");
-					OutputDebugStringA(to_string(e->getEntityType()).c_str());
-					if (e->getEntityType() == MoveBlock)
+					//OutputDebugStringA(to_string(e->getEntityType()).c_str());
+					if (e->getEntityType() == MoveBlock || e->getEntityType() == User)
 					{
 						OutputDebugStringA("\n\tPUSHING\n");
 						push(e, movementDirection);
@@ -170,7 +180,7 @@ void Scene::update(int deltaTime)
 				else {
 					baba->move(movementDirection);
 					map->moveEntity(baba->getGridPos(), testPosition);
-					baba->setGridPos(testPosition);
+					//baba->setGridPos(testPosition);
 				}
 			}
 
@@ -205,7 +215,7 @@ void Scene::update(int deltaTime)
 					else {
 						walls[ind]->move(movementDirection);
 						map->moveEntity(walls[ind]->getGridPos(), testPosition);
-						walls[ind]->setGridPos(testPosition);
+						//walls[ind]->setGridPos(testPosition);
 					}
 				}
 			}
@@ -240,24 +250,30 @@ void Scene::update(int deltaTime)
 
 //TODO: Fix increment not updating on next movement
 
-bool Scene::push(Entity* entity, glm::ivec2 direction)
+bool Scene::push(Entity* entity, glm::ivec2& direction)
 {	
 	bool success, outOfBounds;
 	Entity* e = map->getEntity(entity->getGridPos()+ direction, success, outOfBounds);
+	OutputDebugStringA("\nEntity Position: ");
+	OutputDebugStringA(to_string(entity->getGridPos().x).c_str());
+	OutputDebugStringA(" ");
+	OutputDebugStringA(to_string(entity->getGridPos().y).c_str());
+
 	OutputDebugStringA("\nSuccess: ");
 	OutputDebugStringA(to_string(success).c_str());
+
 	OutputDebugStringA(" OutOfBounds: ");
 	OutputDebugStringA(to_string(outOfBounds).c_str());
 	OutputDebugStringA("\n");
 	string s = "Movement Direction X: " + to_string(direction.x) + "Y: " + to_string(direction.y) + "\n";
 	OutputDebugStringA(s.c_str());
-	if (success && !outOfBounds && !e->hasCollision())
+	if (success && !outOfBounds)
 	{
 		OutputDebugStringA("Collision and may move");
 		if (push(e, direction)) {
-			map->moveEntity(entity->getGridPos(), entity->getGridPos() + direction);
-			entity->setGridPos(entity->getGridPos() + direction);
 			entity->move(direction);
+			map->moveEntity(entity->getGridPos(), entity->getGridPos() + direction);
+			//entity->setGridPos(entity->getGridPos() + direction);
 		}
 	}
 	else if (success && outOfBounds) {
@@ -266,9 +282,9 @@ bool Scene::push(Entity* entity, glm::ivec2 direction)
 	}
 	else if (!success){
 		OutputDebugStringA("No collision, moves right away\n");
-		map->moveEntity(entity->getGridPos(), entity->getGridPos()+direction);
-		entity->setGridPos(entity->getGridPos() + direction);
 		entity->move(direction);
+		map->moveEntity(entity->getGridPos(), entity->getGridPos()+direction);
+		//entity->setGridPos(entity->getGridPos() + direction);
 		string s = "Moves to X: " + to_string(entity->getGridPos().x) + "Y: " + to_string(entity->getGridPos().y) + "\n";
 		OutputDebugStringA(s.c_str());
 	}
@@ -287,14 +303,15 @@ void Scene::render()
 	modelview = glm::mat4(1.0f);
 	texProgram.setUniformMatrix4f("modelview", modelview);
 	texProgram.setUniform2f("texCoordDispl", 0.f, 0.f);
-	map->render();
 	//yaga->render();
 	//interactable->render();
 
+	map->render();
 
 	for (int i = 0; i < walls.size(); i++)
 	{
 		walls[i]->render();
+		
 	}
 	for (int i = 0; i < movables.size(); i++)
 	{

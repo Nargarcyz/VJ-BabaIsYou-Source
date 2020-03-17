@@ -18,8 +18,8 @@ public:
 	Player();
 	Player(PlayerType type);
 	//string getInfo();
-	/*void changePlayerType(PlayerType type);
-	PlayerType getPlayerType();*/
+	//void changePlayerType(PlayerType type);
+	PlayerType getPlayerType();
 
 
 	bool test;

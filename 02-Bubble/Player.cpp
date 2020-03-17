@@ -72,3 +72,8 @@ Player::Player(PlayerType type)
 		break;
 	}
 }
+
+PlayerType Player::getPlayerType()
+{
+	return type;
+}

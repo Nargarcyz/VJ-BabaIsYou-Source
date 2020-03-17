@@ -30,18 +30,7 @@ TileMap::~TileMap()
 }
 
 
-void TileMap::render() const
-{
-	glClearColor(0, .0f, 0,0);
-	glEnable(GL_TEXTURE_2D);
-	tilesheet.use();
-	glBindVertexArray(vao);
-	glEnableVertexAttribArray(posLocation);
-	glEnableVertexAttribArray(texCoordLocation);
-	glDrawArrays(GL_TRIANGLES, 0, 6 * mapSize.x * mapSize.y);
-	glDisable(GL_TEXTURE_2D);
 
-}
 
 void TileMap::free()
 {
@@ -50,36 +39,65 @@ void TileMap::free()
 
 void TileMap::addEntity(int x, int y, Entity* ent)
 {
-	gridMap[x * mapSize.x + y] = ent;
+	gridMap[y * gridMapSize.x + x] = ent;
 }
 void TileMap::moveEntity(glm::ivec2 src, glm::ivec2 dest) {
-	gridMap[dest.x * mapSize.x + dest.y] = gridMap[src.x * mapSize.x + src.y];
-	gridMap[src.x * mapSize.x + src.y] = NULL;
+	gridMap[dest.x + gridMapSize.x * dest.y] = gridMap[src.x + gridMapSize.x * src.y];
+	gridMap[src.x + gridMapSize.x * src.y] = NULL;
 }
 
 Entity* TileMap::getEntity(glm::ivec2 testPosition, bool& success, bool& outOfBounds) {
 	//string s = typeid(gridMap[x * mapSize.x + y]).name();
 	int x = testPosition.x;
 	int y = testPosition.y;
-	string s = "\nChecking X: " + to_string(x) + "Y: " + to_string(y) + "\n";
+	string s = "\nChecking X: " + to_string(x) + "Y: " + to_string(y);
+	OutputDebugStringA(s.c_str());
+	s = "\nMax X: " + to_string(gridMapSize.x) + " Max Y : " + to_string(gridMapSize.y);
 	OutputDebugStringA(s.c_str());
 
 	//if (x<0 || x>mapSize.x || y<0 || y>mapSize.y)
 	outOfBounds = false;
-	if (x<0 || (x>(glutGet(GLUT_WINDOW_WIDTH)-(glutGet(GLUT_WINDOW_WIDTH)%tileSize)) / tileSize) || y<0 || (y > (glutGet(GLUT_WINDOW_HEIGHT)-tileSize) / tileSize))
+	//if (x<0 || (x>(gridMapSize.x -(gridMapSize.x % tileSize)) / tileSize) || y<0 || (y > (gridMapSize.y-tileSize) / tileSize))
+	if (x < 0)
+	{
+		OutputDebugStringA("\nOut left");
+	}
+	else if (x > (gridMapSize.x - 1))
+	{
+		OutputDebugStringA("\nOut right");
+	}
+	else if (y < 0)
+	{
+		OutputDebugStringA("\nOut up");
+	}
+	else if (y > (gridMapSize.y - 1))
+	{
+		OutputDebugStringA("\nOut down");
+	}
+	if (x < 0 || (x > (gridMapSize.x-1)) || y < 0 || (y > (gridMapSize.y-1)))
 	{
 		success = true;
 		outOfBounds = true;
+		OutputDebugStringA("\nOut of bounds");
 		return NULL;
-	}else
-	if (gridMap[x * mapSize.x + y] == NULL)
+	}else if (gridMap[x + gridMapSize.x * y] == NULL)
 	{
+		OutputDebugStringA("\nNo entity detected");
 		success = false;
 		return NULL;
-	}
-	else {
+	} else if (gridMap[x + gridMapSize.x * y] != NULL) {
+		OutputDebugStringA("\nEntity detected at");
+		OutputDebugStringA(to_string(x).c_str());
+		OutputDebugStringA(",");
+		OutputDebugStringA(to_string(y).c_str());
+		OutputDebugStringA("\n");
+		OutputDebugStringA("\nEntity data: ");
+		OutputDebugStringA(to_string(gridMap[y * gridMapSize.x + x]->getGridPos().x).c_str());
+		OutputDebugStringA(",");
+		OutputDebugStringA(to_string(gridMap[y * gridMapSize.x + x]->getGridPos().y).c_str());
+		OutputDebugStringA("\n");
 		success = true;
-		return gridMap[x * mapSize.x + y];
+		return gridMap[x + gridMapSize.x * y];
 	}
 }
 
@@ -134,7 +152,21 @@ bool TileMap::loadLevel(const string& levelFile)
 #endif
 	}
 
-	gridMap = new Entity * [glutGet(GLUT_WINDOW_WIDTH) / tileSize * glutGet(GLUT_WINDOW_HEIGHT) / tileSize]{ NULL };
+
+	gridMapSize = glm::ivec2(floor(glutGet(GLUT_WINDOW_WIDTH) / tileSize), floor(glutGet(GLUT_WINDOW_HEIGHT) / tileSize));
+	//gridMapSize = glm::ivec2(21,20);
+	//gridMap = new Entity * [floor(glutGet(GLUT_WINDOW_WIDTH) / tileSize) * floor(glutGet(GLUT_WINDOW_HEIGHT) / tileSize)]{ NULL };
+	gridMap = new Entity * [gridMapSize.x * gridMapSize.y]{ NULL };
+
+
+	OutputDebugStringA("\TILEMAP SIZE");
+	OutputDebugStringA(to_string(gridMapSize.x).c_str());
+	OutputDebugStringA(",");
+	OutputDebugStringA(to_string(gridMapSize.y).c_str());
+	/*for (int i = 0; i < gridMapSize.x * gridMapSize.y; i++)
+	{
+		gridMap[i] = NULL;
+	}*/
 	/*gridMap = new Entity * [mapSize.x * mapSize.y]{ NULL };*/
 	/*for (int j = 0; j < glutGet(GLUT_WINDOW_HEIGHT) / tileSize; j++)
 	{
@@ -150,6 +182,59 @@ bool TileMap::loadLevel(const string& levelFile)
 	fin.close();
 
 	return true;
+}
+
+void TileMap::render() const
+{
+	glClearColor(0, .0f, 0,0);
+	//glClearColor(1.0, 1.0, 1.0, 0.0);
+	glEnable(GL_TEXTURE_2D);
+	tilesheet.use();
+	glBindVertexArray(vao);
+	glEnableVertexAttribArray(posLocation);
+	glEnableVertexAttribArray(texCoordLocation);
+	glDrawArrays(GL_TRIANGLES, 0, 6 * mapSize.x * mapSize.y);
+	glDisable(GL_TEXTURE_2D);
+
+	/*for (int i = 0; i < gridMapSize.x; i++)
+	{
+		for (int j = 0; j < gridMapSize.y; j++) {
+			if (gridMap[j * gridMapSize.x + i] == NULL)
+			{
+				glPointSize(5.0f);
+				glColor3f(255, 0, 0);
+				glBegin(GL_POINTS);
+				glVertex3f(i * tileSize + tileSize / 2, j * tileSize + tileSize / 2, 0.f);
+				glEnd();
+			}
+
+		}
+	}*/
+
+	/*for (int i = 0; i < floor(glutGet(GLUT_WINDOW_WIDTH) / tileSize) * floor(glutGet(GLUT_WINDOW_HEIGHT) / tileSize); i++)
+	{
+		if (gridMap[i] != NULL)
+		{
+			glClearColor(1.0, 1.0, 1.0, 0.0);
+			glColor3f(1, 0, 0);
+			glPointSize(5.0f);
+			glBegin(GL_POINTS);
+			glVertex3f(gridMap[i]->getGridPos().x*tileSize, gridMap[i]->getGridPos().y* tileSize, 0.f);
+
+			if (gridMap[i]->getEntityType() == EntityType::User && ((Player*)gridMap[i])->getPlayerType() == PlayerType::Baba_p)
+			{
+				OutputDebugStringA("\nEntity detected at");
+				OutputDebugStringA(to_string(gridMap[i]->getGridPos().x).c_str());
+				OutputDebugStringA(",");
+				OutputDebugStringA(to_string(gridMap[i]->getGridPos().y).c_str());
+				OutputDebugStringA("\n");
+			}
+
+			glEnd();
+		}
+	}*/
+
+
 }
 
 void TileMap::prepareArrays(const glm::vec2& minCoords, ShaderProgram& program)
@@ -206,9 +291,9 @@ void TileMap::prepareArrays(const glm::vec2& minCoords, ShaderProgram& program)
 
 void TileMap::getWallLocations(vector<glm::ivec2>& wallLocs)
 {
-	for (int i = 0; i < mapSize.x; i++)
-	{
 		for (int j = 0; j < mapSize.y; j++)
+	{
+	for (int i = 0; i < mapSize.x; i++)
 		{
 			if (map[j * mapSize.x + i] == 1) {
 				wallLocs.push_back(glm::ivec2(i, j));
