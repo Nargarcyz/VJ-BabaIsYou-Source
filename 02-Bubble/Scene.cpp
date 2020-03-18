@@ -27,7 +27,8 @@ Scene::~Scene()
 void Scene::init()
 {
 	initShaders();
-	
+
+
 	map = TileMap::createTileMap("levels/level02.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
 	baba = new Player(Baba_p);
 	//baba->changePlayerType(PlayerType::Baba);
@@ -318,6 +319,7 @@ void Scene::render()
 		movables[i]->render();
 	}
 	baba->render();
+
 }
 
 

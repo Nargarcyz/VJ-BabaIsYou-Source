@@ -6,6 +6,7 @@
 #include <glm/glm.hpp>
 #include "ShaderProgram.h"
 #include "TileMap.h"
+#include "Text.h"
 
 
 
@@ -41,6 +42,7 @@ private:
 	ShaderProgram texProgram;
 	float currentTime;
 	glm::mat4 projection;
+	Text text;
 
 };
 
