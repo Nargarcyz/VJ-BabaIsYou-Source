@@ -62,6 +62,24 @@ void TextScene::update(int deltaTime) {
 			clickedTime = currentTime;
 		}
 	}
+	else if (Game::instance().getKey(13)) {
+		if (currentTime - clickedTime > 200)
+		{
+			switch (selection)
+			{
+			case 0:
+				break;
+			case 1:
+				break;
+			case 2:
+				exit(0);
+				break;
+			default:
+				break;
+			}
+			clickedTime = currentTime;
+		}
+	}
 	if (selection > 2) selection = 2;
 	if (selection < 0) selection = 0;
 
@@ -111,47 +129,14 @@ void TextScene::update(int deltaTime) {
 
 void TextScene::lerpSize(float& textSize, float baseSize, float targetSize, float& fraction, int deltaTime){
 	
-	//float f = (float)textSize / (float)targetSize;
-	//float f = (float)abs(textSize - baseSize) / (float)abs(targetSize - baseSize);
-	//OutputDebugStringA("textSize : ");
-	//OutputDebugStringA(to_string((float)abs(textSize)).c_str());
-	//OutputDebugStringA("\n");
-	//OutputDebugStringA("baseSize: ");
-	//OutputDebugStringA(to_string((float)abs(baseSize)).c_str());
-	//OutputDebugStringA("\n");
-	//OutputDebugStringA("textSize - baseSize: ");
-	//OutputDebugStringA(to_string((float)abs(textSize - baseSize)).c_str());
-	//OutputDebugStringA("\n");
-	//OutputDebugStringA("targetSize - baseSize: ");
-	//OutputDebugStringA(to_string((float)abs(targetSize - baseSize)).c_str());
-	//OutputDebugStringA("\n");
-
-
-	OutputDebugStringA("Fraction before: ");
+	/*OutputDebugStringA("Fraction before: ");
 	OutputDebugStringA(to_string(fraction).c_str());
 	OutputDebugStringA("\n");
 
-	//if (f < 1)
-	//{
-	//	f += deltaTime * growSpeed*f;
-	//	OutputDebugStringA("Fraction after: ");
-	//	OutputDebugStringA(to_string(f).c_str());
-	//	OutputDebugStringA("\n");
-	//	textSize = glm::mix(textSize, targetSize, f);
-	//	if (textSize > targetSize)
-	//	{
-	//		textSize = targetSize;
-	//	}
-	//	else if (textSize < baseSize)
-	//	{
-	//		textSize = baseSize;
-	//	}
-	//	//textSize = 40;
-	//}
 
 	OutputDebugStringA("textSize : ");
 	OutputDebugStringA(to_string((float)abs(textSize)).c_str());
-	OutputDebugStringA("\n");
+	OutputDebugStringA("\n");*/
 	
 	if (targetSize>baseSize && fraction < 1)
 	{

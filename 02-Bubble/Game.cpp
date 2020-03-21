@@ -8,14 +8,14 @@ void Game::init()
 	bPlay = true;
 	glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
 	//glClearColor(0,0,0,0);
-	//scene.init();
-	mainMenu.init();
+	scene.init();
+	//mainMenu.init();
 }
 
 bool Game::update(int deltaTime)
 {
-	//scene.update(deltaTime);
-	mainMenu.update(deltaTime);
+	scene.update(deltaTime);
+	//mainMenu.update(deltaTime);
 	
 	return bPlay;
 }
@@ -23,8 +23,8 @@ bool Game::update(int deltaTime)
 void Game::render()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	//scene.render();
-	mainMenu.render();
+	scene.render();
+	//mainMenu.render();
 }
 
 void Game::keyPressed(int key)

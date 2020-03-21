@@ -21,6 +21,10 @@ public:
 	//void changePlayerType(PlayerType type);
 	PlayerType getPlayerType();
 
+	void move(glm::ivec2 newGridPos);
+
+	void init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram, const glm::ivec2& spriteSize);
+
 
 	bool test;
 
@@ -38,6 +42,7 @@ private:
 	Sprite* sprite;*/
 	//TileMap* map;
 	PlayerType type;
+	int animStep = 0;
 
 };
 

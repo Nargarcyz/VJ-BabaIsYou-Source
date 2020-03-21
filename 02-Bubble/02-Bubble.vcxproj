@@ -45,6 +45,7 @@
   <ItemGroup>
     <Text Include="levels\level01.txt" />
     <Text Include="levels\level02.txt" />
+    <Text Include="levels\level03.txt" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{5BE6CA2A-E5A8-40CC-9015-047CE0C78036}</ProjectGuid>

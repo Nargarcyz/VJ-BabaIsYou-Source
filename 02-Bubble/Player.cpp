@@ -13,7 +13,7 @@
 
 enum PlayerAnims
 {
-	STAND_LEFT, STAND_RIGHT, MOVE_LEFT, MOVE_RIGHT
+	STAND_RIGHT = 0, STAND_UP = 5, STAND_LEFT = 10, STAND_DOWN = 15
 };
 
 //string Player::getInfo()
@@ -58,22 +58,170 @@ Player::Player(PlayerType type)
 {
 	this->type = type;
 	entityType = User;
-	switch (type)
-	{
-	case Baba_p:
-		spriteFile = "images/bub.png";
-		spriteTCoords = glm::vec2(.25f, .25f);
-		break;
-	case Wall_p:
-		spriteFile = "images/Wall.png";
-		spriteTCoords = glm::vec2(1, 1);
-		break;
-	default:
-		break;
-	}
+	//switch (type)
+	//{
+	//case Baba_p:
+	//	spriteFile = "images/bub.png";
+	//	spriteTCoords = glm::vec2(.25f, .25f);
+	//	break;
+	//case Wall_p:
+	//	spriteFile = "images/Walll.png";
+	//	spriteTCoords = glm::vec2(1, 1);
+	//	break;
+	//default:
+	//	break;
+	//}
 }
 
 PlayerType Player::getPlayerType()
 {
 	return type;
+}
+
+
+void Player::move(glm::ivec2 newGridPos)
+{
+	bMoving = true;
+	animStep = (animStep + 1) % 5;
+
+	if (newGridPos.x != 0 && newGridPos.x < 0)
+	{
+		OutputDebugStringA("LEFT");
+		sprite->changeAnimation(STAND_LEFT+animStep);
+	}
+	else if (newGridPos.x != 0 && newGridPos.x > 0)
+	{
+		OutputDebugStringA("RIGHT");
+		sprite->changeAnimation(STAND_RIGHT + animStep);
+	}
+	else if (newGridPos.y != 0 && newGridPos.y > 0)
+	{
+		OutputDebugStringA("DOWN");
+		sprite->changeAnimation(STAND_DOWN + animStep);
+	}
+	else if (newGridPos.y != 0 && newGridPos.y < 0)
+	{
+		OutputDebugStringA("UP");
+		sprite->changeAnimation(STAND_UP + animStep);
+	}
+
+
+
+	moveDestination = posPlayer + newGridPos * spriteSize;
+
+	
+
+}
+
+
+void Player::init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram, const glm::ivec2& spriteSize)
+{
+	test = false;
+	fMoveFraction = 0.f;
+	moveDestination = glm::ivec2(NULL, NULL);
+
+	this->spriteSize = spriteSize;
+	//spritesheet.loadFromFile("images/bub.png", TEXTURE_PIXEL_FORMAT_RGBA);
+	
+
+	switch (type)
+	{
+	case Baba_p: {
+		spriteFile = "images/baba.png";
+		spritesheet.loadFromFile(spriteFile, TEXTURE_PIXEL_FORMAT_RGBA);
+		//spriteTCoords = glm::vec2(.25f, .25f);
+		sprite = Sprite::createSprite(this->spriteSize, glm::vec2(.05, 0.33), &spritesheet, &shaderProgram);
+		/*sprite->setNumberAnimations(4);
+
+			sprite->setAnimationSpeed(STAND_LEFT, 8);
+			sprite->addKeyframe(STAND_LEFT, glm::vec2(0.f, 0.f));
+
+			sprite->setAnimationSpeed(STAND_RIGHT, 8);
+			sprite->addKeyframe(STAND_RIGHT, glm::vec2(0.25f, 0.f));
+
+			sprite->setAnimationSpeed(MOVE_LEFT, 8);
+			sprite->addKeyframe(MOVE_LEFT, glm::vec2(0.f, 0.f));
+			sprite->addKeyframe(MOVE_LEFT, glm::vec2(0.f, 0.25f));
+			sprite->addKeyframe(MOVE_LEFT, glm::vec2(0.f, 0.5f));
+
+			sprite->setAnimationSpeed(MOVE_RIGHT, 8);
+			sprite->addKeyframe(MOVE_RIGHT, glm::vec2(0.25, 0.f));
+			sprite->addKeyframe(MOVE_RIGHT, glm::vec2(0.25, 0.25f));
+			sprite->addKeyframe(MOVE_RIGHT, glm::vec2(0.25, 0.5f));
+
+		sprite->changeAnimation(0);*/
+		int animWidth = 20;
+		int animHeight = 3;
+
+		sprite->setNumberAnimations(animWidth);
+
+		for (int i = 0; i < animWidth; i++)
+		{
+			sprite->setAnimationSpeed(i, 8);
+			for (int j = 0; j < animHeight; j++)
+			{
+				sprite->addKeyframe(i, glm::vec2(i / (float)animWidth, j / (float)animHeight));
+			}
+		}
+		sprite->changeAnimation(0);
+
+		break;
+	}
+	case Wall_p:
+		spriteFile = "images/Walll.png";
+		spritesheet.loadFromFile(spriteFile, TEXTURE_PIXEL_FORMAT_RGBA);
+		//spriteTCoords = glm::vec2(1, 1);
+		sprite = Sprite::createSprite(this->spriteSize, glm::vec2(0.33, 1), &spritesheet, &shaderProgram);
+		/*sprite->setNumberAnimations(4);
+
+			sprite->setAnimationSpeed(STAND_LEFT, 8);
+			sprite->addKeyframe(STAND_LEFT, glm::vec2(0.f, 0.f));
+
+			sprite->setAnimationSpeed(STAND_RIGHT, 8);
+			sprite->addKeyframe(STAND_RIGHT, glm::vec2(0.25f, 0.f));
+
+			sprite->setAnimationSpeed(MOVE_LEFT, 8);
+			sprite->addKeyframe(MOVE_LEFT, glm::vec2(0.f, 0.f));
+			sprite->addKeyframe(MOVE_LEFT, glm::vec2(0.f, 0.25f));
+			sprite->addKeyframe(MOVE_LEFT, glm::vec2(0.f, 0.5f));
+
+			sprite->setAnimationSpeed(MOVE_RIGHT, 8);
+			sprite->addKeyframe(MOVE_RIGHT, glm::vec2(0.25, 0.f));
+			sprite->addKeyframe(MOVE_RIGHT, glm::vec2(0.25, 0.25f));
+			sprite->addKeyframe(MOVE_RIGHT, glm::vec2(0.25, 0.5f));
+
+		sprite->changeAnimation(0);*/
+
+		tileMapDispl = tileMapPos;
+		sprite->setPosition(glm::vec2(float(tileMapDispl.x + posPlayer.x), float(tileMapDispl.y + posPlayer.y)));
+
+		break;
+	default:
+		break;
+	}
+
+	//sprite = Sprite::createSprite(this->spriteSize, glm::vec2(.33, 1), &spritesheet, &shaderProgram);
+	///*sprite->setNumberAnimations(4);
+
+	//	sprite->setAnimationSpeed(STAND_LEFT, 8);
+	//	sprite->addKeyframe(STAND_LEFT, glm::vec2(0.f, 0.f));
+
+	//	sprite->setAnimationSpeed(STAND_RIGHT, 8);
+	//	sprite->addKeyframe(STAND_RIGHT, glm::vec2(0.25f, 0.f));
+
+	//	sprite->setAnimationSpeed(MOVE_LEFT, 8);
+	//	sprite->addKeyframe(MOVE_LEFT, glm::vec2(0.f, 0.f));
+	//	sprite->addKeyframe(MOVE_LEFT, glm::vec2(0.f, 0.25f));
+	//	sprite->addKeyframe(MOVE_LEFT, glm::vec2(0.f, 0.5f));
+
+	//	sprite->setAnimationSpeed(MOVE_RIGHT, 8);
+	//	sprite->addKeyframe(MOVE_RIGHT, glm::vec2(0.25, 0.f));
+	//	sprite->addKeyframe(MOVE_RIGHT, glm::vec2(0.25, 0.25f));
+	//	sprite->addKeyframe(MOVE_RIGHT, glm::vec2(0.25, 0.5f));
+
+	//sprite->changeAnimation(0);*/
+	//
+	//tileMapDispl = tileMapPos;
+	//sprite->setPosition(glm::vec2(float(tileMapDispl.x + posPlayer.x), float(tileMapDispl.y + posPlayer.y)));
+
 }
