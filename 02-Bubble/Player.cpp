@@ -58,19 +58,22 @@ Player::Player(PlayerType type)
 {
 	this->type = type;
 	entityType = User;
-	//switch (type)
-	//{
-	//case Baba_p:
-	//	spriteFile = "images/bub.png";
-	//	spriteTCoords = glm::vec2(.25f, .25f);
-	//	break;
-	//case Wall_p:
-	//	spriteFile = "images/Walll.png";
-	//	spriteTCoords = glm::vec2(1, 1);
-	//	break;
-	//default:
-	//	break;
-	//}
+	switch (type)
+	{
+	case Baba_p:
+		spriteFile = "images/baba.png";
+		spriteTCoords = glm::vec2(.25f, .25f);
+		break;
+	case Wall_p:
+		spriteFile = "images/wall.png";
+		spriteTCoords = glm::vec2(1, 1);
+		break;
+	case Flag_p:
+		spriteFile = "images/flag.png";
+		break;
+	default:
+		break;
+	}
 }
 
 PlayerType Player::getPlayerType()
@@ -82,31 +85,35 @@ PlayerType Player::getPlayerType()
 void Player::move(glm::ivec2 newGridPos)
 {
 	bMoving = true;
-	animStep = (animStep + 1) % 5;
-
-	if (newGridPos.x != 0 && newGridPos.x < 0)
+	if (type==Baba_p)
 	{
-		OutputDebugStringA("LEFT");
-		sprite->changeAnimation(STAND_LEFT+animStep);
+		animStep = (animStep + 1) % 5;
+
+		if (newGridPos.x != 0 && newGridPos.x < 0)
+		{
+			OutputDebugStringA("LEFT");
+			sprite->changeAnimation(STAND_LEFT + animStep);
+		}
+		else if (newGridPos.x != 0 && newGridPos.x > 0)
+		{
+			OutputDebugStringA("RIGHT");
+			sprite->changeAnimation(STAND_RIGHT + animStep);
+		}
+		else if (newGridPos.y != 0 && newGridPos.y > 0)
+		{
+			OutputDebugStringA("DOWN");
+			sprite->changeAnimation(STAND_DOWN + animStep);
+		}
+		else if (newGridPos.y != 0 && newGridPos.y < 0)
+		{
+			OutputDebugStringA("UP");
+			sprite->changeAnimation(STAND_UP + animStep);
+		}
 	}
-	else if (newGridPos.x != 0 && newGridPos.x > 0)
-	{
-		OutputDebugStringA("RIGHT");
-		sprite->changeAnimation(STAND_RIGHT + animStep);
-	}
-	else if (newGridPos.y != 0 && newGridPos.y > 0)
-	{
-		OutputDebugStringA("DOWN");
-		sprite->changeAnimation(STAND_DOWN + animStep);
-	}
-	else if (newGridPos.y != 0 && newGridPos.y < 0)
-	{
-		OutputDebugStringA("UP");
-		sprite->changeAnimation(STAND_UP + animStep);
-	}
+	
 
 
-
+	Game::instance().soundEngine->play2D("sounds/044.ogg");
 	moveDestination = posPlayer + newGridPos * spriteSize;
 
 	
@@ -127,31 +134,12 @@ void Player::init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram, co
 	switch (type)
 	{
 	case Baba_p: {
-		spriteFile = "images/baba.png";
+		//spriteFile = "images/baba.png";
 		spritesheet.loadFromFile(spriteFile, TEXTURE_PIXEL_FORMAT_RGBA);
-		//spriteTCoords = glm::vec2(.25f, .25f);
 		sprite = Sprite::createSprite(this->spriteSize, glm::vec2(.05, 0.33), &spritesheet, &shaderProgram);
-		/*sprite->setNumberAnimations(4);
-
-			sprite->setAnimationSpeed(STAND_LEFT, 8);
-			sprite->addKeyframe(STAND_LEFT, glm::vec2(0.f, 0.f));
-
-			sprite->setAnimationSpeed(STAND_RIGHT, 8);
-			sprite->addKeyframe(STAND_RIGHT, glm::vec2(0.25f, 0.f));
-
-			sprite->setAnimationSpeed(MOVE_LEFT, 8);
-			sprite->addKeyframe(MOVE_LEFT, glm::vec2(0.f, 0.f));
-			sprite->addKeyframe(MOVE_LEFT, glm::vec2(0.f, 0.25f));
-			sprite->addKeyframe(MOVE_LEFT, glm::vec2(0.f, 0.5f));
-
-			sprite->setAnimationSpeed(MOVE_RIGHT, 8);
-			sprite->addKeyframe(MOVE_RIGHT, glm::vec2(0.25, 0.f));
-			sprite->addKeyframe(MOVE_RIGHT, glm::vec2(0.25, 0.25f));
-			sprite->addKeyframe(MOVE_RIGHT, glm::vec2(0.25, 0.5f));
-
-		sprite->changeAnimation(0);*/
 		int animWidth = 20;
 		int animHeight = 3;
+
 
 		sprite->setNumberAnimations(animWidth);
 
@@ -165,63 +153,25 @@ void Player::init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram, co
 		}
 		sprite->changeAnimation(0);
 
+		tileMapDispl = tileMapPos;
+		sprite->setPosition(glm::vec2(float(tileMapDispl.x + posPlayer.x), float(tileMapDispl.y + posPlayer.y)));
+
 		break;
 	}
-	case Wall_p:
-		spriteFile = "images/Walll.png";
+	default:
 		spritesheet.loadFromFile(spriteFile, TEXTURE_PIXEL_FORMAT_RGBA);
-		//spriteTCoords = glm::vec2(1, 1);
-		sprite = Sprite::createSprite(this->spriteSize, glm::vec2(0.33, 1), &spritesheet, &shaderProgram);
-		/*sprite->setNumberAnimations(4);
-
-			sprite->setAnimationSpeed(STAND_LEFT, 8);
-			sprite->addKeyframe(STAND_LEFT, glm::vec2(0.f, 0.f));
-
-			sprite->setAnimationSpeed(STAND_RIGHT, 8);
-			sprite->addKeyframe(STAND_RIGHT, glm::vec2(0.25f, 0.f));
-
-			sprite->setAnimationSpeed(MOVE_LEFT, 8);
-			sprite->addKeyframe(MOVE_LEFT, glm::vec2(0.f, 0.f));
-			sprite->addKeyframe(MOVE_LEFT, glm::vec2(0.f, 0.25f));
-			sprite->addKeyframe(MOVE_LEFT, glm::vec2(0.f, 0.5f));
-
-			sprite->setAnimationSpeed(MOVE_RIGHT, 8);
-			sprite->addKeyframe(MOVE_RIGHT, glm::vec2(0.25, 0.f));
-			sprite->addKeyframe(MOVE_RIGHT, glm::vec2(0.25, 0.25f));
-			sprite->addKeyframe(MOVE_RIGHT, glm::vec2(0.25, 0.5f));
-
-		sprite->changeAnimation(0);*/
+		sprite = Sprite::createSprite(this->spriteSize, glm::vec2(1, 1 / 3.), &spritesheet, &shaderProgram);
+		sprite->setNumberAnimations(1);
+		sprite->setAnimationSpeed(0, 8);
+		sprite->addKeyframe(0, glm::vec2(0., 0.));
+		sprite->addKeyframe(0, glm::vec2(0, 1 / 3.));
+		sprite->addKeyframe(0, glm::vec2(0, 2 / 3.));
+		sprite->changeAnimation(0);
 
 		tileMapDispl = tileMapPos;
 		sprite->setPosition(glm::vec2(float(tileMapDispl.x + posPlayer.x), float(tileMapDispl.y + posPlayer.y)));
 
 		break;
-	default:
-		break;
 	}
-
-	//sprite = Sprite::createSprite(this->spriteSize, glm::vec2(.33, 1), &spritesheet, &shaderProgram);
-	///*sprite->setNumberAnimations(4);
-
-	//	sprite->setAnimationSpeed(STAND_LEFT, 8);
-	//	sprite->addKeyframe(STAND_LEFT, glm::vec2(0.f, 0.f));
-
-	//	sprite->setAnimationSpeed(STAND_RIGHT, 8);
-	//	sprite->addKeyframe(STAND_RIGHT, glm::vec2(0.25f, 0.f));
-
-	//	sprite->setAnimationSpeed(MOVE_LEFT, 8);
-	//	sprite->addKeyframe(MOVE_LEFT, glm::vec2(0.f, 0.f));
-	//	sprite->addKeyframe(MOVE_LEFT, glm::vec2(0.f, 0.25f));
-	//	sprite->addKeyframe(MOVE_LEFT, glm::vec2(0.f, 0.5f));
-
-	//	sprite->setAnimationSpeed(MOVE_RIGHT, 8);
-	//	sprite->addKeyframe(MOVE_RIGHT, glm::vec2(0.25, 0.f));
-	//	sprite->addKeyframe(MOVE_RIGHT, glm::vec2(0.25, 0.25f));
-	//	sprite->addKeyframe(MOVE_RIGHT, glm::vec2(0.25, 0.5f));
-
-	//sprite->changeAnimation(0);*/
-	//
-	//tileMapDispl = tileMapPos;
-	//sprite->setPosition(glm::vec2(float(tileMapDispl.x + posPlayer.x), float(tileMapDispl.y + posPlayer.y)));
 
 }

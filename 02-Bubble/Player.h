@@ -9,7 +9,7 @@
 // Player is basically a Sprite that represents the player. As such it has
 // all properties it needs to track its movement, jumping, and collisions.
 
-enum PlayerType { Baba_p = 0, Wall_p = 1 };
+enum PlayerType { Baba_p = 0, Wall_p = 1, Flag_p};
 
 
 class Player : public Entity
@@ -43,7 +43,8 @@ private:
 	//TileMap* map;
 	PlayerType type;
 	int animStep = 0;
-
+	bool isWin = false;
+	bool isStop = false;
 };
 
 

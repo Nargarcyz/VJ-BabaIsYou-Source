@@ -3,6 +3,7 @@
 
 
 #include "TextScene.h"
+#include <irrKlang.h>
 
 
 #define SCREEN_WIDTH 640
@@ -27,6 +28,7 @@ public:
 	}
 	
 	void init();
+	
 	bool update(int deltaTime);
 	void render();
 	
@@ -41,7 +43,12 @@ public:
 	
 	bool getKey(int key) const;
 	bool getSpecialKey(int key) const;
+	void playSound(const char* path);
+	
 
+	irrklang::ISoundEngine* soundEngine;
+	irrklang::ISound* moveSound;
+	
 private:
 	bool bPlay;                       // Continue to play game?
 	Scene scene;                      // Scene to render

@@ -1,5 +1,6 @@
 #include "Entity.h"
-
+#include "Game.h"
+#include <irrKlang.h>
 string Entity::getInfo()
 {
 	string info = "Entity:\n -isStop = " + std::to_string(isStop) + "\n - bJumping = " + std::to_string(bJumping) + "\n - bMoving = " + std::to_string(bMoving);
@@ -12,6 +13,7 @@ void Entity::init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram, co
 	fMoveFraction = 0.f;
 	moveDestination = glm::ivec2(NULL, NULL);
 
+	int e = Baba;
 	this->spriteSize = spriteSize;
 	//spritesheet.loadFromFile("images/bub.png", TEXTURE_PIXEL_FORMAT_RGBA);
 	spritesheet.loadFromFile(spriteFile, TEXTURE_PIXEL_FORMAT_RGBA);
@@ -75,7 +77,6 @@ void Entity::move(glm::ivec2 newGridPos)
 {
 	bMoving = true;
 	moveDestination = posPlayer + newGridPos * spriteSize;
-	
 }
 
 void Entity::update(int deltaTime)

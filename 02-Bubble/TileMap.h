@@ -36,6 +36,8 @@ public:
 
 	void moveEntity(glm::ivec2 src, glm::ivec2 dest);
 
+	void removeEntity(glm::ivec2 pos);
+
 	Entity* getEntity(glm::ivec2 testPosition, bool& success, bool& outOfBounds);
 
 	//Entity* getEntity(int x, int y, bool& success);

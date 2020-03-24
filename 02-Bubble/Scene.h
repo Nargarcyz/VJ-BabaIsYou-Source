@@ -14,7 +14,6 @@
 // Scene contains all the entities of our game.
 // It is responsible for updating and render them.
 
-enum class Possessable { Baba = 0, Wall = 1 };
 
 class Scene
 {
@@ -25,6 +24,8 @@ public:
 
 	void switchPos(int key);
 	void init();
+	bool createInstances(const string& levelFile);
+	void changePossession(PlayerType newPlayer);
 	void update(int deltaTime);
 	void render();
 	bool push(Entity* entity, glm::ivec2& direction);
@@ -36,13 +37,19 @@ private:
 	TileMap* map;
 	Player* baba;
 	Player* yaga;
-	Possessable possessed;
+	
+	PlayerType possessed;
+	
+	vector<Player*> possessables;
+	
 	vector<Player*> walls;
+
 	vector<Movable*> movables;
 	ShaderProgram texProgram;
 	float currentTime;
 	glm::mat4 projection;
 	Text text;
+	bool completed;
 
 };
 

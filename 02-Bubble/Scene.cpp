@@ -24,14 +24,140 @@ Scene::~Scene()
 }
 
 
+
+bool Scene::createInstances(const string& levelFile)
+{
+	string line, type;
+	ifstream fin;
+	stringstream sstream;
+
+	fin.open(levelFile.c_str());
+	if (!fin.is_open())
+		return false;
+	int iLine = 0;
+	while (iLine != 29 && std::getline(fin,line))
+	{
+		++iLine;
+	}
+	if (iLine != 29)
+		return false;
+	std::getline(fin, line);
+
+
+	while (line.compare(0, 3, "END") != 0)
+	{
+		sstream.str(line);
+		sstream >> type;
+		
+		if (type == "Object" || type == "Relation" || type == "Property")
+		{
+			string name;
+			glm::vec2 pos;
+			stringstream movableString;
+			movableString.str(line);
+			movableString >> type >> name >> pos.x >> pos.y;
+			OutputDebugStringA(("\n" + movableString.str()).c_str());
+			OutputDebugStringA(("\n" + type).c_str());
+			OutputDebugStringA(("\n" + name).c_str());
+			OutputDebugStringA(("\n" + to_string(pos.x)).c_str());
+			OutputDebugStringA(("\n" + to_string(pos.y)).c_str());
+
+			const char** it;
+			int iType, index;
+			if (type == "Object")
+			{
+				iType = 0;
+				const char** it = std::find(std::begin(ObjectStrings), std::end(ObjectStrings), name);
+				if (it != std::end(ObjectStrings))
+				{
+					index = std::distance(std::begin(ObjectStrings), it);
+				}
+				OutputDebugStringA(("\n" + type + " " +  ObjectStrings[index] + " at " + to_string(pos.x) + " " + to_string(pos.y)).c_str());
+					
+			}
+			else if (type == "Relation")
+			{
+				iType = 1;
+				const char** it = std::find(std::begin(RelationStrings), std::end(RelationStrings), name);
+				if (it != std::end(RelationStrings))
+				{
+					index = std::distance(std::begin(RelationStrings), it);
+				}
+				OutputDebugStringA(("\n" + type + " " + RelationStrings[index] + " at " + to_string(pos.x) + " " + to_string(pos.y)).c_str());
+			}
+			else if (type == "Property")
+			{
+				iType = 2;
+				const char** it = std::find(std::begin(PropertyStrings), std::end(PropertyStrings), name);
+				if (it != std::end(PropertyStrings))
+				{
+					index = std::distance(std::begin(PropertyStrings),it);
+				}
+				OutputDebugStringA(("\n" + type + " " + PropertyStrings[index] + " at " + to_string(pos.x) + " " + to_string(pos.y)).c_str());
+			}
+
+			Movable* mov = new Movable((Words)iType, index);
+			mov->init(glm::ivec2(0, 0), texProgram, glm::ivec2(24, 24));
+			mov->setPosition(pos, map->getTileSize());
+			map->addEntity(pos.x, pos.y, (Entity*)mov);
+			movables.push_back(mov);
+		}
+		else if (type == "Baba" || type == "Flag")
+		{
+			string name;
+			glm::vec2 pos;
+			stringstream userString;
+			int type;
+			userString >> name >> pos.x >> pos.y;
+			if (name == "Baba")
+			{
+				Player* pl = new Player(Baba_p);
+				pl->init(glm::ivec2(0, 0), texProgram, glm::ivec2(24, 24));
+				pl->setPosition(pos, map->getTileSize());
+				map->addEntity(pos.x, pos.y, (Entity*)pl);
+				possessables.push_back(pl);
+			}
+			else if (name == "Flag")
+			{
+				Player* pl = new Player(Flag_p);
+				pl->init(glm::ivec2(0, 0), texProgram, glm::ivec2(24, 24));
+				pl->setPosition(pos, map->getTileSize());
+				map->addEntity(pos.x,pos.y, (Entity*)pl);
+				possessables.push_back(pl);
+			}
+			
+		}
+		std::getline(fin, line);
+	}
+}void checkRules() {
+
+}
+
+void Scene::changePossession(PlayerType newPlayer) {
+	switch (possessed)
+	{
+	case Baba_p:
+		break;
+	case Wall_p:
+		break;
+	case Flag_p:
+		break;
+	default:
+		break;
+	}
+}
+
 void Scene::init()
 {
 	initShaders();
 
 
-	map = TileMap::createTileMap("levels/level03.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
+	map = TileMap::createTileMap("levels/level02.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
+	createInstances("levels/level02.txt");
+	changePossession(Baba_p);
+
+
 	baba = new Player(Baba_p);
-	//baba->changePlayerType(PlayerType::Baba);
 	baba->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, glm::ivec2(24, 24));
 	baba->setPosition(glm::vec2(INIT_PLAYER_X_TILES, INIT_PLAYER_Y_TILES), map->getTileSize());
 	map->addEntity(INIT_PLAYER_X_TILES, INIT_PLAYER_Y_TILES, (Entity*)baba);
@@ -46,11 +172,23 @@ void Scene::init()
 		OutputDebugStringA(msg.c_str());
 	}*/
 
-	Movable* testIs = new Movable(Words::Relation,Relations::Is);
-	testIs->init(glm::ivec2(0, 0), texProgram, glm::ivec2(24, 24));
-	testIs->setPosition(glm::vec2(10,10), map->getTileSize());
-	map->addEntity(10,10, (Entity*)testIs);
-	movables.push_back(testIs);
+	/*Movable* mov = new Movable(Words::Relation,Relations::Is);
+	mov->init(glm::ivec2(0, 0), texProgram, glm::ivec2(24, 24));
+	mov->setPosition(glm::vec2(10,10), map->getTileSize());
+	map->addEntity(10,10, (Entity*)mov);
+	movables.push_back(mov);
+
+	mov = new Movable(Words::Object, Objects::Baba);
+	mov->init(glm::ivec2(0, 0), texProgram, glm::ivec2(24, 24));
+	mov->setPosition(glm::vec2(9, 10), map->getTileSize());
+	map->addEntity(9, 10, (Entity*)mov);
+	movables.push_back(mov);
+
+	mov = new Movable(Words::Property, Properties::You);
+	mov->init(glm::ivec2(0, 0), texProgram, glm::ivec2(24, 24));
+	mov->setPosition(glm::vec2(11, 10), map->getTileSize());
+	map->addEntity(11, 10, (Entity*)mov);
+	movables.push_back(mov);*/
 
 	/*yaga = new Player();
 	yaga->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, glm::ivec2(24, 24));
@@ -74,8 +212,6 @@ void Scene::init()
 		wall->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, glm::ivec2(24, 24));
 		wall->setPosition(glm::vec2(wallLocs[i].x, (wallLocs[i].y)), map->getTileSize());
 		//wall->setTileMap(map);
-		string s = "\nWALL X: " + to_string(wallLocs[i].x) + "Y: " + to_string(wallLocs[i].y);
-		OutputDebugStringA(s.c_str());
 		map->addEntity(wallLocs[i].x, wallLocs[i].y, (Entity*)wall);
 		wall->setCollision(true);
 
@@ -105,9 +241,9 @@ void Scene::init()
 	currentTime = 0.0f;
 }
 
-void checkRules() {
 
-}
+
+
 
 void Scene::update(int deltaTime)
 {
@@ -118,11 +254,11 @@ void Scene::update(int deltaTime)
 
 	if (Game::instance().getSpecialKey(1))
 	{
-		possessed = Possessable::Baba;
+		possessed = PlayerType::Baba_p;
 	}
 	else if (Game::instance().getSpecialKey(2))
 	{
-		possessed = Possessable::Wall;
+		possessed = PlayerType::Wall_p;
 	}
 
 
@@ -151,7 +287,7 @@ void Scene::update(int deltaTime)
 		switch (possessed)
 		{
 
-		case Possessable::Baba:
+		case PlayerType::Baba_p:
 			//baba->update(deltaTime);
 			if (!baba->isMoving())
 			{
@@ -186,7 +322,7 @@ void Scene::update(int deltaTime)
 			}
 
 			break;
-		case Possessable::Wall: {
+		case PlayerType::Wall_p: {
 			int ind;
 			for (int i = 0; i < walls.size(); i++)
 			{

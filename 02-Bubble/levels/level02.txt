@@ -19,3 +19,17 @@ images/blocksBaba.png					-- Tilesheet
 122222222222221
 111111111111111
 
+
+
+
+
+
+
+
+
+Object BabaB 10 10
+Relation Is 11 10
+Property You 12 10
+Baba 13 13
+Flag 3 3
+END

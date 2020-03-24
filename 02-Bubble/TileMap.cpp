@@ -45,20 +45,23 @@ void TileMap::moveEntity(glm::ivec2 src, glm::ivec2 dest) {
 	gridMap[dest.x + gridMapSize.x * dest.y] = gridMap[src.x + gridMapSize.x * src.y];
 	gridMap[src.x + gridMapSize.x * src.y] = NULL;
 }
+void TileMap::removeEntity(glm::ivec2 src) {
+	gridMap[src.x + gridMapSize.x * src.y] = NULL;
+}
 
 Entity* TileMap::getEntity(glm::ivec2 testPosition, bool& success, bool& outOfBounds) {
 	//string s = typeid(gridMap[x * mapSize.x + y]).name();
 	int x = testPosition.x;
 	int y = testPosition.y;
-	string s = "\nChecking X: " + to_string(x) + "Y: " + to_string(y);
+	/*string s = "\nChecking X: " + to_string(x) + "Y: " + to_string(y);
 	OutputDebugStringA(s.c_str());
 	s = "\nMax X: " + to_string(gridMapSize.x) + " Max Y : " + to_string(gridMapSize.y);
-	OutputDebugStringA(s.c_str());
+	OutputDebugStringA(s.c_str());*/
 
 	//if (x<0 || x>mapSize.x || y<0 || y>mapSize.y)
 	outOfBounds = false;
 	//if (x<0 || (x>(gridMapSize.x -(gridMapSize.x % tileSize)) / tileSize) || y<0 || (y > (gridMapSize.y-tileSize) / tileSize))
-	if (x < 0)
+	/*if (x < 0)
 	{
 		OutputDebugStringA("\nOut left");
 	}
@@ -73,20 +76,20 @@ Entity* TileMap::getEntity(glm::ivec2 testPosition, bool& success, bool& outOfBo
 	else if (y > (gridMapSize.y - 1))
 	{
 		OutputDebugStringA("\nOut down");
-	}
+	}*/
 	if (x < 0 || (x > (gridMapSize.x-1)) || y < 0 || (y > (gridMapSize.y-1)))
 	{
 		success = true;
 		outOfBounds = true;
-		OutputDebugStringA("\nOut of bounds");
+		//OutputDebugStringA("\nOut of bounds");
 		return NULL;
 	}else if (gridMap[x + gridMapSize.x * y] == NULL)
 	{
-		OutputDebugStringA("\nNo entity detected");
+		//OutputDebugStringA("\nNo entity detected");
 		success = false;
 		return NULL;
 	} else if (gridMap[x + gridMapSize.x * y] != NULL) {
-		OutputDebugStringA("\nEntity detected at");
+		/*OutputDebugStringA("\nEntity detected at");
 		OutputDebugStringA(to_string(x).c_str());
 		OutputDebugStringA(",");
 		OutputDebugStringA(to_string(y).c_str());
@@ -95,7 +98,7 @@ Entity* TileMap::getEntity(glm::ivec2 testPosition, bool& success, bool& outOfBo
 		OutputDebugStringA(to_string(gridMap[y * gridMapSize.x + x]->getGridPos().x).c_str());
 		OutputDebugStringA(",");
 		OutputDebugStringA(to_string(gridMap[y * gridMapSize.x + x]->getGridPos().y).c_str());
-		OutputDebugStringA("\n");
+		OutputDebugStringA("\n");*/
 		success = true;
 		return gridMap[x + gridMapSize.x * y];
 	}

@@ -6,11 +6,18 @@
 void Game::init()
 {
 	bPlay = true;
+	soundEngine = irrklang::createIrrKlangDevice();
+	if (!soundEngine)
+	{
+		exit(333);
+	}
+	
 	glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
 	//glClearColor(0,0,0,0);
 	scene.init();
 	//mainMenu.init();
 }
+
 
 bool Game::update(int deltaTime)
 {
@@ -60,6 +67,7 @@ void Game::mousePress(int button)
 void Game::mouseRelease(int button)
 {
 }
+
 
 bool Game::getKey(int key) const
 {
