@@ -41,7 +41,7 @@ void Entity::init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram, co
 	sprite->setPosition(glm::vec2(float(tileMapDispl.x + posPlayer.x), float(tileMapDispl.y + posPlayer.y)));
 
 }
-bool Entity::hasCollision()
+bool Entity::stops()
 {
 	return isStop;
 }
@@ -54,6 +54,11 @@ bool Entity::isMoving()
 void Entity::setCollision(bool collision)
 {
 	isStop = collision;
+}
+
+void Entity::setStop(bool stop)
+{
+	isStop = stop;
 }
 
 glm::ivec2 Entity::getGridPos()

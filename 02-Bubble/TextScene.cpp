@@ -49,27 +49,29 @@ void TextScene::update(int deltaTime) {
 
 
 	if (Game::instance().getSpecialKey(GLUT_KEY_UP)) {
-		if (currentTime-clickedTime > 200)
+		if (currentTime-clickedTime > 100)
 		{
 			selection -= 1;
 			clickedTime = currentTime;
 		}
 	}
 	else if (Game::instance().getSpecialKey(GLUT_KEY_DOWN)) {
-		if (currentTime - clickedTime > 200)
+		if (currentTime - clickedTime > 100)
 		{
 			selection += 1;
 			clickedTime = currentTime;
 		}
 	}
 	else if (Game::instance().getKey(13)) {
-		if (currentTime - clickedTime > 200)
+		if (currentTime - clickedTime > 100)
 		{
 			switch (selection)
 			{
 			case 0:
+				Game::instance().changeActiveScene(-1);
 				break;
 			case 1:
+				Game::instance().changeActiveScene(-2);
 				break;
 			case 2:
 				exit(0);
@@ -157,7 +159,7 @@ void TextScene::render()
 {
 	glm::mat4 modelview;
 
-
+	glClearColor(21/255., 24/255., 31/255., 0);
 	texProgram.use();
 	texProgram.setUniformMatrix4f("projection", projection);
 	texProgram.setUniform4f("color", 1.0f, 1.0f, 1.0f, 1.0f);

@@ -14,6 +14,8 @@
     <ClInclude Include="AnimKeyframes.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="HelpScreen.h" />
+    <ClInclude Include="LevelSelection.h" />
     <ClInclude Include="Movable.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Scene.h" />
@@ -29,6 +31,8 @@
   <ItemGroup>
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="HelpScreen.cpp" />
+    <ClCompile Include="LevelSelection.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Movable.cpp" />
     <ClCompile Include="Player.cpp" />

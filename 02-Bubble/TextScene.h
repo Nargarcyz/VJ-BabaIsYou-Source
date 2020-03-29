@@ -20,6 +20,7 @@ private:
 	void lerpSize(float& textSize, float baseSize, float targetSize, float& fraction, int deltaTime);
 	ShaderProgram texProgram;
 	glm::mat4 projection;
+
 	Text titleText;
 	Text levelSelectText;
 	Text helpText;
@@ -43,5 +44,7 @@ private:
 	float growSpeed;
 	float currentTime;
 	float clickedTime;
+
+	bool choosingLevel = false;
 };
 

@@ -13,6 +13,8 @@ class Movable :
 {
 public:
 	Movable(Words word, int typeIndex);
+	Words getWordType();
+	int getTypeIndex();
 	void init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram, const glm::ivec2& spriteSize);
 	
 

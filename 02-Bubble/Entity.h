@@ -27,6 +27,8 @@ class Entity
 public:
 	void init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram, const glm::ivec2& spriteSize);
 
+	bool stops();
+
 
 	void move(glm::ivec2 increment);
 	void update(int deltaTime);

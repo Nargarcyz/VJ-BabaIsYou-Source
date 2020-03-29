@@ -108,13 +108,17 @@ bool Scene::createInstances(const string& levelFile)
 			glm::vec2 pos;
 			stringstream userString;
 			int type;
+			userString.str(line);
 			userString >> name >> pos.x >> pos.y;
+			OutputDebugStringA(("\n" + name).c_str());
+			OutputDebugStringA(("\n" + to_string(pos.x)).c_str());
+			OutputDebugStringA(("\n" + to_string(pos.y)).c_str());
 			if (name == "Baba")
 			{
 				Player* pl = new Player(Baba_p);
 				pl->init(glm::ivec2(0, 0), texProgram, glm::ivec2(24, 24));
 				pl->setPosition(pos, map->getTileSize());
-				map->addEntity(pos.x, pos.y, (Entity*)pl);
+				//map->addEntity(pos.x, pos.y, (Entity*)pl);
 				possessables.push_back(pl);
 			}
 			else if (name == "Flag")
@@ -122,45 +126,245 @@ bool Scene::createInstances(const string& levelFile)
 				Player* pl = new Player(Flag_p);
 				pl->init(glm::ivec2(0, 0), texProgram, glm::ivec2(24, 24));
 				pl->setPosition(pos, map->getTileSize());
-				map->addEntity(pos.x,pos.y, (Entity*)pl);
+				//map->addEntity(pos.x,pos.y, (Entity*)pl);
 				possessables.push_back(pl);
 			}
 			
 		}
 		std::getline(fin, line);
 	}
-}void checkRules() {
+
+
+
 
 }
+void Scene::applyRule(Objects obj, Relations rel, Properties prop)
+{
 
-void Scene::changePossession(PlayerType newPlayer) {
-	switch (possessed)
+	
+
+	for (int i = 0; i < possessables.size(); i++)
 	{
-	case Baba_p:
-		break;
-	case Wall_p:
-		break;
-	case Flag_p:
-		break;
-	default:
-		break;
+		switch (obj)	
+		{
+		case Baba:
+			if (possessables[i]->getEntityType() == User && ((Player*)possessables[i])->getPlayerType() == Baba)
+			{
+				switch (rel)
+				{
+				case Is:
+					switch (prop)
+					{
+					case You:
+						possessed = Baba_p;
+						break;
+					case Stop:
+						((Player*)possessables[i])->setStop(true);
+						break;
+					case Win:
+						((Player*)possessables[i])->setWin(true);
+						break;
+					default:
+						break;
+					}
+					break;
+				case And:
+					break;
+				default:
+					break;
+				}
+			}
+			break;
+		case Flag:
+			break;
+		case Wall:
+			break;
+		default:
+			break;
+		}
+	}
+}
+void Scene::checkRules() {
+	for (int i = 0; i < possessables.size(); i++)
+	{
+		((Player*)possessables[i])->setStop(false);
+		((Player*)possessables[i])->setWin(false);
+		//possessed = NoPl;
+	}
+
+	vector< pair<Objects, Properties> > toProcess;
+	Relations rel;
+
+	for (int i = 0; i < movables.size(); i++)
+	{
+		if (movables[i]->getWordType() == Object)
+		{
+
+		}
+	}
+
+	/*for (int i = 0; i < movables.size(); i++)
+	{
+		if (movables[i]->getWordType() == Object)
+		{
+
+			while (true)
+			{
+
+			}
+
+
+
+
+
+			glm::vec2 position = movables[i]->getGridPos();
+			bool success = false;
+			bool outOfBounds = false;
+			Entity* ent = map->getEntity(position + glm::vec2(1, 0), success, outOfBounds);
+			
+			if (success && !outOfBounds && ent->getEntityType() == MoveBlock && ((Movable*)ent)->getWordType() == Relation)
+			{
+				success = false;
+				outOfBounds = false;
+				ent = map->getEntity(position + glm::vec2(2, 0), success, outOfBounds);
+				if (success && !outOfBounds && ent->getEntityType() == MoveBlock && ((Movable*)ent)->getWordType() == Property)
+				{
+
+				}
+			}
+		}
+	}*/
+
+	for (int i = 0; i < toProcess.size(); i++)
+	{
+		applyRule(toProcess[i].first, rel, toProcess[i].second);
 	}
 }
 
-void Scene::init()
+vector<Movable*> Scene::getMovableLine(glm::vec2 startPos, glm::vec2 direction)
+{
+	
+	vector<Movable*> mov;
+	glm::vec2 pos = startPos + direction;
+	bool success = false;
+	bool outOfBounds = false;
+	bool valid = false;
+	bool onObjects = true;
+	int i = 0;
+	Entity* ent = map->getEntity(pos, success, outOfBounds);
+
+	while (success && !outOfBounds)
+	{
+		if (ent->getEntityType() != MoveBlock)
+		{
+			if (!valid)
+			{
+				return vector<Movable*>();
+			}
+			else {
+				return mov;
+			}
+		}
+		if (onObjects)
+		{
+			//Odd position, means either IS or AND
+			if (i % 2)
+			{
+				if (!((Movable*)ent)->getWordType() == Relation)
+				{
+					return vector<Movable*>();
+				}
+				else if (((Movable*)ent)->getTypeIndex() == Relations::Is)
+				{
+					onObjects = false;
+					mov.push_back((Movable*)ent);
+				}
+				else if (((Movable*)ent)->getTypeIndex() == Relations::And)
+				{
+					mov.push_back((Movable*)ent);
+				}
+			}
+			else {
+				if (!((Movable*)ent)->getWordType() == Object)
+				{
+					return vector<Movable*>();
+				}
+				else
+				{
+					mov.push_back((Movable*)ent);
+				}
+			}
+			
+		}
+		else {
+			if (i % 2)
+			{
+				if (!((Movable*)ent)->getWordType() == Relation)
+				{
+					return vector<Movable*>();
+				}
+				else if (((Movable*)ent)->getTypeIndex() == Relations::And)
+				{
+					valid = false;
+					mov.push_back((Movable*)ent);
+				}
+			}
+			else {
+				if (!((Movable*)ent)->getWordType() == Object)
+				{
+					return vector<Movable*>();
+				}
+				else
+				{
+					valid = true;
+					mov.push_back((Movable*)ent);
+				}
+			}
+		}
+		pos += direction;
+		i++;
+		ent = map->getEntity(pos, success, outOfBounds);
+	}
+
+	if (valid)
+	{
+		OutputDebugStringA("VALID LINE");
+		return mov;
+	}
+	else {
+		return vector<Movable*>();
+	}
+	//return vector<Movable*>();
+}
+
+void Scene::changePossession(PlayerType newPlayer) {
+	possessed = newPlayer;
+	for (int i = 0; i < possessables.size(); i++)
+	{
+		if (possessables[i]->getPlayerType() == possessed)
+		{
+			map->removeEntity(possessables[i]->getGridPos());
+		}
+		else {
+			map->addEntity(possessables[i]->getGridPos().x, possessables[i]->getGridPos().y, possessables[i]);
+		}
+	}
+}
+
+void Scene::init(const string levelFile)
 {
 	initShaders();
 
 
-	map = TileMap::createTileMap("levels/level02.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
-	createInstances("levels/level02.txt");
-	changePossession(Baba_p);
+	map = TileMap::createTileMap(levelFile, glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
+	createInstances(levelFile);
+	
 
 
-	baba = new Player(Baba_p);
+	/*baba = new Player(Baba_p);
 	baba->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, glm::ivec2(24, 24));
 	baba->setPosition(glm::vec2(INIT_PLAYER_X_TILES, INIT_PLAYER_Y_TILES), map->getTileSize());
-	map->addEntity(INIT_PLAYER_X_TILES, INIT_PLAYER_Y_TILES, (Entity*)baba);
+	map->addEntity(INIT_PLAYER_X_TILES, INIT_PLAYER_Y_TILES, (Entity*)baba);*/
 	
 
 	bool success, outOfBounds = false;
@@ -203,6 +407,10 @@ void Scene::init()
 	//	p->setTileMap(map);
 	//	walls.push_back(*p);
 	//}
+
+
+
+
 	vector<glm::ivec2> wallLocs;
 	map->getWallLocations(wallLocs);
 	for (int i = 0; i < wallLocs.size(); i++)
@@ -212,24 +420,19 @@ void Scene::init()
 		wall->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, glm::ivec2(24, 24));
 		wall->setPosition(glm::vec2(wallLocs[i].x, (wallLocs[i].y)), map->getTileSize());
 		//wall->setTileMap(map);
-		map->addEntity(wallLocs[i].x, wallLocs[i].y, (Entity*)wall);
+		//map->addEntity(wallLocs[i].x, wallLocs[i].y, (Entity*)wall);
 		wall->setCollision(true);
 
-		/*msg = "Wall Added With Type: " + to_string(wall->getPlayerType()) + "\n";
-		OutputDebugStringA(msg.c_str());
 
-		bool success = false;
-		Player* e = (Player*)map->getEntity(wallLocs[i].x, wallLocs[i].y, success);
-		if (success)
-		{
-			msg = "Player Type Added: " + to_string(e->getPlayerType()) + "\t" + "Collisionable: " + to_string(e->hasCollision()) + "\n";
-			OutputDebugStringA(msg.c_str());
-			
-		}*/
 
-		walls.push_back(wall);
+		//walls.push_back(wall);
+		possessables.push_back(wall);
 
 	}
+
+
+
+
 	//possessed = baba;
 
 	/*interactable = new Interactable();
@@ -237,6 +440,7 @@ void Scene::init()
 	interactable->setPosition(glm::vec2(3 * map->getTileSize(), 13 * map->getTileSize()));
 	interactable->setTileMap(map);*/
 
+	changePossession(Baba_p);
 	projection = glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT - 1), 0.f);
 	currentTime = 0.0f;
 }
@@ -250,15 +454,17 @@ void Scene::update(int deltaTime)
 	currentTime += deltaTime;
 	//possessed->update(deltaTime);
 
-	checkRules();
-
 	if (Game::instance().getSpecialKey(1))
 	{
-		possessed = PlayerType::Baba_p;
+		changePossession(PlayerType::Baba_p);
 	}
 	else if (Game::instance().getSpecialKey(2))
 	{
-		possessed = PlayerType::Wall_p;
+		changePossession(PlayerType::Wall_p);
+	}
+	else if (Game::instance().getSpecialKey(3))
+	{
+		checkRules();
 	}
 
 
@@ -278,98 +484,73 @@ void Scene::update(int deltaTime)
 	else if (Game::instance().getSpecialKey(GLUT_KEY_DOWN)) {
 		movementDirection = glm::ivec2(0, 1);
 		move = true;
+	}else if (Game::instance().getKey(8)) {
+		Game::instance().changeActiveScene(0);
 	}
+
 
 
 	glm::ivec2 testPosition = movementDirection;
 	if (move)
 	{
-		switch (possessed)
+		int ind;
+		for (int i = 0; i < possessables.size(); i++)
 		{
-
-		case PlayerType::Baba_p:
-			//baba->update(deltaTime);
-			if (!baba->isMoving())
-			{
-				OutputDebugStringA("\Baba grid pos:");
-				OutputDebugStringA(to_string(baba->getGridPos().x).c_str());
-				OutputDebugStringA(",");
-				OutputDebugStringA(to_string(baba->getGridPos().y).c_str());
-				OutputDebugStringA("\n");
-				testPosition = movementDirection + baba->getGridPos();
-				bool success, outOfBounds;
-				Entity* e;
-				e = map->getEntity(testPosition, success, outOfBounds);
-				if (outOfBounds)
-				{
-					break;
-				}else if (success && e != NULL)
-				{
-					OutputDebugStringA("\nCollision\n");
-					//OutputDebugStringA(to_string(e->getEntityType()).c_str());
-					if (e->getEntityType() == MoveBlock || e->getEntityType() == User)
-					{
-						OutputDebugStringA("\n\tPUSHING\n");
-						push(e, movementDirection);
-					}
-
-				}
-				else {
-					baba->move(movementDirection);
-					map->moveEntity(baba->getGridPos(), testPosition);
-					//baba->setGridPos(testPosition);
-				}
-			}
-
-			break;
-		case PlayerType::Wall_p: {
-			int ind;
-			for (int i = 0; i < walls.size(); i++)
-			{
-				if (glm::min(movementDirection.x,movementDirection.y)==-1)
+			
+				if (glm::min(movementDirection.x, movementDirection.y) == -1)
 				{
 					ind = i;
 				}
 				else {
-					ind = walls.size() - 1 - i;
+					ind = possessables.size() - 1 - i;
 				}
 				//walls[i].update(deltaTime);
 
-				if (!(walls[ind]->isMoving()))
+			if (possessables[ind]->getPlayerType() == possessed)
+			{
+				if (!(possessables[ind]->isMoving()))
 				{
-					testPosition = movementDirection + walls[ind]->getGridPos();
+					testPosition = movementDirection + possessables[ind]->getGridPos();
 					bool success, outOfBounds;
 					Entity* e;
 					e = map->getEntity(testPosition, success, outOfBounds);
 
-					
+					//TODO REWORK PUSH
 
-					if (success)
+
+					if (outOfBounds)
 					{
-						//OutputDebugStringA(e->getInfo().c_str());
+						break;
+					}
+					else if (success && e != NULL)
+					{
+						OutputDebugStringA("\nCollision\n");
+						//OutputDebugStringA(to_string(e->getEntityType()).c_str());
+						if (e->getEntityType() == MoveBlock )//|| e->getEntityType() == User)
+						{
+							OutputDebugStringA("\n\tPUSHING\n");
+							push(e, movementDirection);
+						}
 
 					}
 					else {
-						walls[ind]->move(movementDirection);
-						map->moveEntity(walls[ind]->getGridPos(), testPosition);
-						//walls[ind]->setGridPos(testPosition);
+						possessables[ind]->move(movementDirection);
+						map->moveEntity(possessables[ind]->getGridPos(), testPosition);
+						//baba->setGridPos(testPosition);
 					}
+
 				}
 			}
-			break;
-		}
-		default:
-			break;
+			
 		}
 	}
 
 
-	baba->update(deltaTime);
-
-	for (int i = 0; i < walls.size(); i++)
+	for (int i = 0; i < possessables.size(); i++)
 	{
-		walls[i]->update(deltaTime);
+		possessables[i]->update(deltaTime);
 	}
+
 
 	for (int i = 0; i < movables.size(); i++)
 	{
@@ -377,7 +558,7 @@ void Scene::update(int deltaTime)
 	}
 
 	
-	//yaga->update(deltaTime);
+
 
 
 	
@@ -407,11 +588,27 @@ bool Scene::push(Entity* entity, glm::ivec2& direction)
 	if (success && !outOfBounds)
 	{
 		OutputDebugStringA("Collision and may move");
-		if (push(e, direction)) {
-			entity->move(direction);
-			map->moveEntity(entity->getGridPos(), entity->getGridPos() + direction);
-			//entity->setGridPos(entity->getGridPos() + direction);
+		if (e->getEntityType() == User)
+		{
+			if (e->stops())// && entity->getEntityType() == User && ((Player*)entity)->getPlayerType() == possessed)
+			{
+				return false;
+			}
+			else if (push(e, direction))
+			{
+				entity->move(direction);
+				map->moveEntity(entity->getGridPos(), entity->getGridPos() + direction);
+			}
 		}
+		else if (e->getEntityType() == MoveBlock)
+		{
+			if (push(e, direction))
+			{
+				entity->move(direction);
+				map->moveEntity(entity->getGridPos(), entity->getGridPos() + direction);
+			}
+		}
+		
 	}
 	else if (success && outOfBounds) {
 		OutputDebugStringA("Collision and out of bounds");
@@ -445,7 +642,17 @@ void Scene::render()
 
 	map->render();
 
-	for (int i = 0; i < walls.size(); i++)
+	for (int i = 0; i < possessables.size(); i++)
+	{
+		possessables[i]->render();
+	}
+
+	for (int i = 0; i < movables.size(); i++)
+	{
+		movables[i]->render();
+	}
+
+	/*for (int i = 0; i < walls.size(); i++)
 	{
 		walls[i]->render();
 		
@@ -454,7 +661,7 @@ void Scene::render()
 	{
 		movables[i]->render();
 	}
-	baba->render();
+	baba->render();*/
 
 }
 
@@ -489,6 +696,8 @@ void Scene::initShaders()
 	vShader.free();
 	fShader.free();
 }
+
+
 
 
 

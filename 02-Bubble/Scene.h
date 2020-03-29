@@ -23,8 +23,11 @@ public:
 	~Scene();
 
 	void switchPos(int key);
-	void init();
+	void init(const string levelFile);
 	bool createInstances(const string& levelFile);
+	//void applyRule(vector<Objects>* objs, vector<Relations*> rel, vector<Properties*> prop);
+	void applyRule(Objects obj, Relations rel, Properties prop);
+	void checkRules();
 	void changePossession(PlayerType newPlayer);
 	void update(int deltaTime);
 	void render();
@@ -32,6 +35,7 @@ public:
 
 private:
 	void initShaders();
+	vector<Movable*> getMovableLine(glm::vec2 startPos, glm::vec2 direction);
 
 private:
 	TileMap* map;
@@ -48,7 +52,6 @@ private:
 	ShaderProgram texProgram;
 	float currentTime;
 	glm::mat4 projection;
-	Text text;
 	bool completed;
 
 };

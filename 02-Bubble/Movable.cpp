@@ -7,11 +7,21 @@ Movable::Movable(Words word, int typeIndex)
 	movableTypeIndex = typeIndex;
 }
 
+Words Movable::getWordType()
+{
+	return wordType;
+}
+
+int Movable::getTypeIndex()
+{
+	return movableTypeIndex;
+}
+
 void Movable::init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram, const glm::ivec2& spriteSize)
 {
 	fMoveFraction = 0.f;
 	moveDestination = glm::ivec2(NULL, NULL);
-
+	
 	this->spriteSize = spriteSize;
 	//spritesheet.loadFromFile("images/bub.png", TEXTURE_PIXEL_FORMAT_RGBA);
 	string file = "images/";

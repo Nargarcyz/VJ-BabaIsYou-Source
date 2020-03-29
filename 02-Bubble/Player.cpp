@@ -120,6 +120,16 @@ void Player::move(glm::ivec2 newGridPos)
 
 }
 
+bool Player::canWin()
+{
+	return isWin;
+}
+
+void Player::setWin(bool win)
+{
+	isWin = win;
+}
+
 
 void Player::init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram, const glm::ivec2& spriteSize)
 {

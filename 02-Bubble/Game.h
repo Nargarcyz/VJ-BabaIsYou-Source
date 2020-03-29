@@ -3,6 +3,8 @@
 
 
 #include "TextScene.h"
+#include "LevelSelection.h"
+#include "HelpScreen.h"
 #include <irrKlang.h>
 
 
@@ -28,6 +30,8 @@ public:
 	}
 	
 	void init();
+
+	//void changeActiveLevel(int levelId);
 	
 	bool update(int deltaTime);
 	void render();
@@ -44,6 +48,8 @@ public:
 	bool getKey(int key) const;
 	bool getSpecialKey(int key) const;
 	void playSound(const char* path);
+
+	void changeActiveScene(int sceneId);
 	
 
 	irrklang::ISoundEngine* soundEngine;
@@ -51,9 +57,14 @@ public:
 	
 private:
 	bool bPlay;                       // Continue to play game?
-	Scene scene;                      // Scene to render
+	Scene* scene;                      // Scene to render
 	Scene levelChooser;
-	TextScene mainMenu, instructions, credits;
+	Scene* activeScene;
+	bool inMenu, inSelectionScreen, inHelpScreen;
+	int menuScreen = 0;
+	TextScene mainMenu;
+	LevelSelection levelSelection;
+	HelpScreen helpMenu;
 	bool keys[256], specialKeys[256]; // Store key states so that 
 	                                  // we can have access at any time
 
