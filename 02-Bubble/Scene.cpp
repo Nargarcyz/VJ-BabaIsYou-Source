@@ -99,6 +99,7 @@ bool Scene::createInstances(const string& levelFile)
 			Movable* mov = new Movable((Words)iType, index);
 			mov->init(glm::ivec2(0, 0), texProgram, glm::ivec2(24, 24));
 			mov->setPosition(pos, map->getTileSize());
+			
 			map->addEntity(pos.x, pos.y, (Entity*)mov);
 			movables.push_back(mov);
 		}
@@ -118,6 +119,7 @@ bool Scene::createInstances(const string& levelFile)
 				Player* pl = new Player(Baba_p);
 				pl->init(glm::ivec2(0, 0), texProgram, glm::ivec2(24, 24));
 				pl->setPosition(pos, map->getTileSize());
+				pl->setCollision(false);
 				//map->addEntity(pos.x, pos.y, (Entity*)pl);
 				possessables.push_back(pl);
 			}
@@ -126,6 +128,7 @@ bool Scene::createInstances(const string& levelFile)
 				Player* pl = new Player(Flag_p);
 				pl->init(glm::ivec2(0, 0), texProgram, glm::ivec2(24, 24));
 				pl->setPosition(pos, map->getTileSize());
+				pl->setCollision(false);
 				//map->addEntity(pos.x,pos.y, (Entity*)pl);
 				possessables.push_back(pl);
 			}
@@ -420,8 +423,8 @@ void Scene::init(const string levelFile)
 		wall->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, glm::ivec2(24, 24));
 		wall->setPosition(glm::vec2(wallLocs[i].x, (wallLocs[i].y)), map->getTileSize());
 		//wall->setTileMap(map);
-		//map->addEntity(wallLocs[i].x, wallLocs[i].y, (Entity*)wall);
-		wall->setCollision(true);
+		map->addEntity(wallLocs[i].x, wallLocs[i].y, (Entity*)wall);
+		wall->setCollision(false);
 
 
 
@@ -520,16 +523,17 @@ void Scene::update(int deltaTime)
 
 					if (outOfBounds)
 					{
-						break;
+						continue;
 					}
 					else if (success && e != NULL)
 					{
 						OutputDebugStringA("\nCollision\n");
 						//OutputDebugStringA(to_string(e->getEntityType()).c_str());
-						if (e->getEntityType() == MoveBlock )//|| e->getEntityType() == User)
+						if (e->getEntityType() == MoveBlock || e->getEntityType() == User)
 						{
 							OutputDebugStringA("\n\tPUSHING\n");
 							push(e, movementDirection);
+							//push(possessables[ind], movementDirection);
 						}
 
 					}
@@ -549,6 +553,19 @@ void Scene::update(int deltaTime)
 	for (int i = 0; i < possessables.size(); i++)
 	{
 		possessables[i]->update(deltaTime);
+	}
+
+
+	//Remove entities in the same place
+	for (int i = 0; i < possessables.size(); i++)
+	{
+		for (int j = 0; j < possessables.size(); j++)
+		{
+			if (i != j && possessables[i]->getGridPos() == possessables[j]->getGridPos())
+			{
+				possessables.erase(possessables.begin() + j);
+			}
+		}
 	}
 
 
@@ -592,10 +609,12 @@ bool Scene::push(Entity* entity, glm::ivec2& direction)
 		{
 			if (e->stops())// && entity->getEntityType() == User && ((Player*)entity)->getPlayerType() == possessed)
 			{
+				OutputDebugStringA("Cant friggin push man, it stops");
 				return false;
 			}
 			else if (push(e, direction))
 			{
+				OutputDebugStringA("Push it to the fucking limit");
 				entity->move(direction);
 				map->moveEntity(entity->getGridPos(), entity->getGridPos() + direction);
 			}
