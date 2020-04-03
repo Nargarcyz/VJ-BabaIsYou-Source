@@ -3,12 +3,14 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "Scene.h"
 #include "Game.h"
+#include <set>
+
 
 
 #define SCREEN_X 0
 #define SCREEN_Y 0
 
-#define INIT_PLAYER_X_TILES 15
+#define INIT_PLAYER_X_TILES 14
 #define INIT_PLAYER_Y_TILES 15
 
 
@@ -141,70 +143,144 @@ bool Scene::createInstances(const string& levelFile)
 
 
 }
-void Scene::applyRule(Objects obj, Relations rel, Properties prop)
+void Scene::applyRule(Objects obj, Properties prop)
 {
-
-	
-
 	for (int i = 0; i < possessables.size(); i++)
 	{
-		switch (obj)	
+		if (possessables[i]->getPlayerType() == obj)
 		{
-		case Baba:
-			if (possessables[i]->getEntityType() == User && ((Player*)possessables[i])->getPlayerType() == Baba)
+			switch (prop)
 			{
-				switch (rel)
+			case You:
+				//changePossession((PlayerType)obj);
+				possessables[i]->setPossessed(true);
+				map->removeEntity(possessables[i]->getGridPos());
+
+				break;
+			case Stop:
+				possessables[i]->setCollision(true);
+				map->addEntity(possessables[i]->getGridPos().x, possessables[i]->getGridPos().y, possessables[i]);
+				break;
+			case Win:
+				if (possessables[i]->isPossessed())
 				{
-				case Is:
-					switch (prop)
-					{
-					case You:
-						possessed = Baba_p;
-						break;
-					case Stop:
-						((Player*)possessables[i])->setStop(true);
-						break;
-					case Win:
-						((Player*)possessables[i])->setWin(true);
-						break;
-					default:
-						break;
-					}
-					break;
-				case And:
-					break;
-				default:
-					break;
+					completed = true;
 				}
+				possessables[i]->setWin(true);
+				map->addEntity(possessables[i]->getGridPos().x, possessables[i]->getGridPos().y, possessables[i]);
+				break;
+			default:
+				break;
 			}
-			break;
-		case Flag:
-			break;
-		case Wall:
-			break;
-		default:
-			break;
 		}
 	}
 }
+
+
+void Scene::changePossession(PlayerType newPlayer) {
+	for (int i = 0; i < possessables.size(); i++)
+	{
+		if (newPlayer == NoPl)
+		{
+			possessables[i]->setPossessed(false);
+
+		}
+		else if (possessables[i]->getPlayerType() == newPlayer)
+		{
+			OutputDebugStringA("\nFound an entity to possess");
+			possessables[i]->setPossessed(true);
+			map->removeEntity(possessables[i]->getGridPos());
+		}
+		else {
+			possessables[i]->setPossessed(false);
+			map->addEntity(possessables[i]->getGridPos().x, possessables[i]->getGridPos().y, possessables[i]);
+		}
+	}
+}
+
 void Scene::checkRules() {
+	for (int i = 0; i < possessables.size(); i++) {
+		//map->addEntity(possessables[i]->getGridPos().x, possessables[i]->getGridPos().y, possessables[i]);
+		map->removeEntity(possessables[i]->getGridPos());
+	}
 	for (int i = 0; i < possessables.size(); i++)
 	{
 		((Player*)possessables[i])->setStop(false);
 		((Player*)possessables[i])->setWin(false);
-		//possessed = NoPl;
+		possessables[i]->setPossessed(false);
+		//changePossession(NoPl);
 	}
 
-	vector< pair<Objects, Properties> > toProcess;
+	set< pair<Objects, Properties> > rulesToProcess;
 	Relations rel;
+	
+	OutputDebugStringA("\t---RECHECKING RULES ---\n");
 
 	for (int i = 0; i < movables.size(); i++)
 	{
 		if (movables[i]->getWordType() == Object)
 		{
+			OutputDebugStringA(("\nFound a movable object at " +to_string(movables[i]->getGridPos().x) + "," + to_string(movables[i]->getGridPos().y)).c_str());
+			vector<Movable*> line = getMovableLine(movables[i]->getGridPos(), glm::vec2(1, 0));
+			if (!line.empty())
+			{
+				string lineInfo = "";
+				int separator = 0;
+				for (int i = 0; i < line.size(); i++)
+				{
+					switch (line[i]->getWordType())
+					{
+					case Object:
+						lineInfo += " " + (string)ObjectStrings[line[i]->getTypeIndex()];
+						break;
+					case Relation:
+						if (line[i]->getTypeIndex() == Relations::Is)
+						{
+							separator = i;
+						}
+						lineInfo += " " + (string)RelationStrings[line[i]->getTypeIndex()];
+						break;
+					case Property:
+						lineInfo += " " + (string)PropertyStrings[line[i]->getTypeIndex()];
+						break;
+					default:
+						break;
+					}
+				}
+				OutputDebugStringA("\nFound valid line:");
+				OutputDebugStringA(("\n" + lineInfo).c_str());
 
+
+				OutputDebugStringA("\n--Parsing objects:");
+				for (int object = 0; object < separator; object = object + 2)
+				{
+					OutputDebugStringA(("\n"+(string)ObjectStrings[line[object]->getTypeIndex()] + " will have attributes:").c_str());
+					for (int property = separator+1; property < line.size(); property = property + 2)
+					{
+						OutputDebugStringA((","+(string)PropertyStrings[line[property]->getTypeIndex()]).c_str());
+						OutputDebugStringA(("\n Inserting " + to_string((Objects)object) + "," + to_string((Properties)property)).c_str());
+						rulesToProcess.insert(make_pair((Objects)line[object]->getTypeIndex(), (Properties)line[property]->getTypeIndex()));
+					}
+				}
+
+
+
+			}
 		}
 	}
+
+
+	OutputDebugStringA("\n|-----RULE PARSING-----|");
+	set< pair <Objects, Properties> >::iterator it = rulesToProcess.begin();
+	while (it != rulesToProcess.end())
+	{
+		OutputDebugStringA("\n|-----Rule:");
+		OutputDebugStringA(("\n|-----"+(string)ObjectStrings[(*it).first]+"is" + (string)PropertyStrings[(*it).second]).c_str());
+		applyRule((*it).first, (*it).second);
+		it++;
+	}
+
+	needToRecheckRules = false;
 
 	/*for (int i = 0; i < movables.size(); i++)
 	{
@@ -238,73 +314,93 @@ void Scene::checkRules() {
 		}
 	}*/
 
-	for (int i = 0; i < toProcess.size(); i++)
+	/*for (int i = 0; i < toProcess.size(); i++)
 	{
 		applyRule(toProcess[i].first, rel, toProcess[i].second);
-	}
+	}*/
 }
 
 vector<Movable*> Scene::getMovableLine(glm::vec2 startPos, glm::vec2 direction)
 {
 	
 	vector<Movable*> mov;
-	glm::vec2 pos = startPos + direction;
+	vector<Movable*> partial = vector<Movable*>();
+	glm::vec2 pos = startPos ;
 	bool success = false;
 	bool outOfBounds = false;
 	bool valid = false;
 	bool onObjects = true;
+	bool hasAnd = false;
 	int i = 0;
 	Entity* ent = map->getEntity(pos, success, outOfBounds);
-
+	OutputDebugStringA(("\n--Success: " + to_string(success) + " OutOfBounds: " + to_string(outOfBounds)).c_str());
+	OutputDebugStringA(("\n\tOBTAINING LINE: START - " + to_string(startPos.x) + "," + to_string(startPos.y)).c_str());
 	while (success && !outOfBounds)
+	//while (!outOfBounds)
 	{
+		
+		OutputDebugStringA(("\n--Success Checking at " + to_string(pos.x) + "," + to_string(pos.y)).c_str());
+		OutputDebugStringA(("\n--Obtained " + to_string(ent->getGridPos().x) + "," + to_string(ent->getGridPos().y)).c_str());
+		OutputDebugStringA(("\n--Entity type: " + to_string(ent->getEntityType())).c_str());
 		if (ent->getEntityType() != MoveBlock)
 		{
-			if (!valid)
-			{
-				return vector<Movable*>();
-			}
-			else {
-				return mov;
-			}
-		}
+			OutputDebugStringA("\n----stopping");
+			break;
+		} else 
+		
 		if (onObjects)
 		{
-			//Odd position, means either IS or AND
-			if (i % 2)
+			if (i % 2 == 1) //If position is odd
 			{
-				if (!((Movable*)ent)->getWordType() == Relation)
-				{
-					return vector<Movable*>();
-				}
-				else if (((Movable*)ent)->getTypeIndex() == Relations::Is)
-				{
-					onObjects = false;
-					mov.push_back((Movable*)ent);
-				}
-				else if (((Movable*)ent)->getTypeIndex() == Relations::And)
-				{
-					mov.push_back((Movable*)ent);
-				}
+				if (((Movable*)ent)->getWordType() != Relation)
+					{
+						//If something that is not a Relation is in an odd position,
+						//the phrase is invalid
+						valid = false;
+						break;
+					}
+					else if (((Movable*)ent)->getTypeIndex() == Relations::Is)
+					{
+						//If at the first relation position there is not an and
+						//there won't be an and in the objects section
+						onObjects = false;
+						mov.push_back((Movable*)ent);
+					}
+					else if (((Movable*)ent)->getTypeIndex() == Relations::And)
+					{
+						//If at the first relation there is an and, keep parsing ands until
+						//an if is found
+						mov.push_back((Movable*)ent);
+					}
+					
+				
 			}
 			else {
-				if (!((Movable*)ent)->getWordType() == Object)
+				if (((Movable*)ent)->getWordType() != Object)
 				{
-					return vector<Movable*>();
+					//return vector<Movable*>();
+					valid = false;
+					break;
 				}
 				else
 				{
 					mov.push_back((Movable*)ent);
 				}
 			}
-			
 		}
 		else {
-			if (i % 2)
+			OutputDebugStringA("\nAfter Objects");
+			if (i % 2 == 1)
 			{
-				if (!((Movable*)ent)->getWordType() == Relation)
+				if (((Movable*)ent)->getWordType() != Relation)
 				{
-					return vector<Movable*>();
+					if (valid)
+					{
+						break;
+					}
+					//return vector<Movable*>();
+					valid = false;
+					break;
 				}
 				else if (((Movable*)ent)->getTypeIndex() == Relations::And)
 				{
@@ -313,46 +409,42 @@ vector<Movable*> Scene::getMovableLine(glm::vec2 startPos, glm::vec2 direction)
 				}
 			}
 			else {
-				if (!((Movable*)ent)->getWordType() == Object)
+				if (((Movable*)ent)->getWordType() != Property)
 				{
-					return vector<Movable*>();
+					//return vector<Movable*>();
+					valid = false;
+					break;
 				}
 				else
 				{
+					OutputDebugStringA("\Property at right position");
 					valid = true;
 					mov.push_back((Movable*)ent);
+					partial = mov;
 				}
 			}
 		}
-		pos += direction;
+		OutputDebugStringA("\nNew IT");
+		pos = pos + direction;
 		i++;
 		ent = map->getEntity(pos, success, outOfBounds);
+		OutputDebugStringA(("\n--Success: " + to_string(success) + " OutOfBounds: " + to_string(outOfBounds)).c_str());
 	}
+	OutputDebugStringA("\nENDED");
 
-	if (valid)
+	/*if (valid)
 	{
-		OutputDebugStringA("VALID LINE");
-		return mov;
+		OutputDebugStringA("\nVALID LINE");
+		return partial;
 	}
 	else {
+		OutputDebugStringA("\nNOT A VALID LINE");
 		return vector<Movable*>();
-	}
+	}*/
+	return partial;
 	//return vector<Movable*>();
 }
 
-void Scene::changePossession(PlayerType newPlayer) {
-	possessed = newPlayer;
-	for (int i = 0; i < possessables.size(); i++)
-	{
-		if (possessables[i]->getPlayerType() == possessed)
-		{
-			map->removeEntity(possessables[i]->getGridPos());
-		}
-		else {
-			map->addEntity(possessables[i]->getGridPos().x, possessables[i]->getGridPos().y, possessables[i]);
-		}
-	}
-}
 
 void Scene::init(const string levelFile)
 {
@@ -424,8 +516,9 @@ void Scene::init(const string levelFile)
 		wall->setPosition(glm::vec2(wallLocs[i].x, (wallLocs[i].y)), map->getTileSize());
 		//wall->setTileMap(map);
 		map->addEntity(wallLocs[i].x, wallLocs[i].y, (Entity*)wall);
-		wall->setCollision(false);
-
+		wall->setCollision(true);
+		
+		//OutputDebugStringA(("\n\t" + to_string(wall->getEntityType() == User)).c_str());
 
 
 		//walls.push_back(wall);
@@ -443,7 +536,8 @@ void Scene::init(const string levelFile)
 	interactable->setPosition(glm::vec2(3 * map->getTileSize(), 13 * map->getTileSize()));
 	interactable->setTileMap(map);*/
 
-	changePossession(Baba_p);
+	//changePossession(Baba_p);
+	checkRules();
 	projection = glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT - 1), 0.f);
 	currentTime = 0.0f;
 }
@@ -457,6 +551,28 @@ void Scene::update(int deltaTime)
 	currentTime += deltaTime;
 	//possessed->update(deltaTime);
 
+	bool moving = false;
+	bool move = false;
+	for (int i = 0; i < possessables.size(); i++)
+	{
+		if (possessables[i]->isMoving())
+		{
+			moving = true;
+			break;
+		}
+	}
+
+	if (!moving && completed)
+	{
+		OutputDebugStringA("COMPLETED");
+		if (Game::instance().getKey(13)) {
+			Game::instance().changeActiveScene(-1);
+		}
+		return;
+	}
+	
+
+
 	if (Game::instance().getSpecialKey(1))
 	{
 		changePossession(PlayerType::Baba_p);
@@ -469,25 +585,46 @@ void Scene::update(int deltaTime)
 	{
 		checkRules();
 	}
-
-
+	
 	glm::ivec2 movementDirection = glm::ivec2(0, 0);
-	bool move = false;
-	if (Game::instance().getSpecialKey(GLUT_KEY_LEFT)) {
-		movementDirection = glm::ivec2(-1, 0);
-		move = true;
+	if (!moving)
+	{
+		if (needToRecheckRules)
+		{
+			checkRules();
+		}
+		
+		if (Game::instance().getSpecialKey(GLUT_KEY_LEFT)) {
+			if (currentTime - clickedTime > 100) {
+				movementDirection = glm::ivec2(-1, 0);
+				move = true;
+				clickedTime = currentTime;
+			}
+		}
+		else if (Game::instance().getSpecialKey(GLUT_KEY_RIGHT)) {
+			if (currentTime - clickedTime > 100) {
+				movementDirection = glm::ivec2(1, 0);
+				move = true;
+				clickedTime = currentTime;
+			}
+		}
+		else if (Game::instance().getSpecialKey(GLUT_KEY_UP)) {
+			if (currentTime - clickedTime > 100) {
+				movementDirection = glm::ivec2(0, -1);
+				move = true;
+				clickedTime = currentTime;
+			}
+		}
+		else if (Game::instance().getSpecialKey(GLUT_KEY_DOWN)) {
+			if (currentTime - clickedTime > 100) {
+				movementDirection = glm::ivec2(0, 1);
+				move = true;
+				clickedTime = currentTime;
+			}
+		}
 	}
-	else if (Game::instance().getSpecialKey(GLUT_KEY_RIGHT)) {
-		movementDirection = glm::ivec2(1, 0);
-		move = true;
-	}else if (Game::instance().getSpecialKey(GLUT_KEY_UP)) {
-		movementDirection = glm::ivec2(0, -1);
-		move = true;
-	}
-	else if (Game::instance().getSpecialKey(GLUT_KEY_DOWN)) {
-		movementDirection = glm::ivec2(0, 1);
-		move = true;
-	}else if (Game::instance().getKey(8)) {
+	
+	if (Game::instance().getKey(8)) {
 		Game::instance().changeActiveScene(0);
 	}
 
@@ -509,8 +646,10 @@ void Scene::update(int deltaTime)
 				}
 				//walls[i].update(deltaTime);
 
-			if (possessables[ind]->getPlayerType() == possessed)
+			//if (possessables[ind]->getPlayerType() == possessed)
+			if (possessables[ind]->isPossessed())
 			{
+				OutputDebugStringA("\nPos");
 				if (!(possessables[ind]->isMoving()))
 				{
 					testPosition = movementDirection + possessables[ind]->getGridPos();
@@ -532,8 +671,8 @@ void Scene::update(int deltaTime)
 						if (e->getEntityType() == MoveBlock || e->getEntityType() == User)
 						{
 							OutputDebugStringA("\n\tPUSHING\n");
-							push(e, movementDirection);
-							//push(possessables[ind], movementDirection);
+							//push(e, movementDirection);
+							push(possessables[ind], movementDirection);
 						}
 
 					}
@@ -547,7 +686,30 @@ void Scene::update(int deltaTime)
 			}
 			
 		}
+
+		vector<Entity*> allEntities(possessables.begin(), possessables.end());
+		allEntities.insert(allEntities.end(), movables.begin(), movables.end());
+
+		for (int i = 0; i < allEntities.size(); i++)
+		{
+			if (allEntities[i]->isMoving())
+			{
+				for (int j = 0; j < allEntities.size(); j++)
+				{
+					if (!allEntities[j]->isMoving() && allEntities[i]->moveDestination == allEntities[j]->getGridPos())
+					{
+						OutputDebugStringA("\nSAME SPOT STOPPPPPPPPPPPPPPPPPPPPP");
+						allEntities[i]->setMoving(false);
+						allEntities[i]->moveDestination = glm::vec2(NULL, NULL);
+					}
+				}
+			}
+
+		}
 	}
+
+
+	
 
 
 	for (int i = 0; i < possessables.size(); i++)
@@ -561,7 +723,7 @@ void Scene::update(int deltaTime)
 	{
 		for (int j = 0; j < possessables.size(); j++)
 		{
-			if (i != j && possessables[i]->getGridPos() == possessables[j]->getGridPos())
+			if (i != j && possessables[i]->getPlayerType() == possessables[j]->getPlayerType() && possessables[i]->getGridPos() == possessables[j]->getGridPos())
 			{
 				possessables.erase(possessables.begin() + j);
 			}
@@ -575,7 +737,7 @@ void Scene::update(int deltaTime)
 	}
 
 	
-
+	
 
 
 	
@@ -602,12 +764,21 @@ bool Scene::push(Entity* entity, glm::ivec2& direction)
 	OutputDebugStringA("\n");
 	string s = "Movement Direction X: " + to_string(direction.x) + "Y: " + to_string(direction.y) + "\n";
 	OutputDebugStringA(s.c_str());
+	bool moveThis = false;
 	if (success && !outOfBounds)
 	{
 		OutputDebugStringA("Collision and may move");
+		//string st = (" Entity type: ") + ("User" ? e->getEntityType() == User : "Movable");
+		string st = to_string(e->isUser);
+		OutputDebugStringA(("\n\t"+st).c_str());
 		if (e->getEntityType() == User)
 		{
-			if (e->stops())// && entity->getEntityType() == User && ((Player*)entity)->getPlayerType() == possessed)
+			OutputDebugStringA("Pushing a possessable");
+			if (((Player*)e)->canWin())
+			{
+				moveThis = true;
+				completed = true;
+			}else if (e->stops())// && entity->getEntityType() == User && ((Player*)entity)->getPlayerType() == possessed)
 			{
 				OutputDebugStringA("Cant friggin push man, it stops");
 				return false;
@@ -615,19 +786,21 @@ bool Scene::push(Entity* entity, glm::ivec2& direction)
 			else if (push(e, direction))
 			{
 				OutputDebugStringA("Push it to the fucking limit");
-				entity->move(direction);
-				map->moveEntity(entity->getGridPos(), entity->getGridPos() + direction);
+				moveThis = true;
 			}
 		}
 		else if (e->getEntityType() == MoveBlock)
 		{
 			if (push(e, direction))
 			{
-				entity->move(direction);
-				map->moveEntity(entity->getGridPos(), entity->getGridPos() + direction);
+				moveThis = true;
+				needToRecheckRules = true;
 			}
 		}
-		
+		else if (e->getEntityType() == User)
+		{
+
+		}
 	}
 	else if (success && outOfBounds) {
 		OutputDebugStringA("Collision and out of bounds");
@@ -635,11 +808,31 @@ bool Scene::push(Entity* entity, glm::ivec2& direction)
 	}
 	else if (!success){
 		OutputDebugStringA("No collision, moves right away\n");
-		entity->move(direction);
-		map->moveEntity(entity->getGridPos(), entity->getGridPos()+direction);
-		//entity->setGridPos(entity->getGridPos() + direction);
-		string s = "Moves to X: " + to_string(entity->getGridPos().x) + "Y: " + to_string(entity->getGridPos().y) + "\n";
-		OutputDebugStringA(s.c_str());
+		moveThis = true;
+		//entity->move(direction);
+		//map->moveEntity(entity->getGridPos(), entity->getGridPos()+direction);
+		////entity->setGridPos(entity->getGridPos() + direction);
+		//string s = "Moves to X: " + to_string(entity->getGridPos().x) + "Y: " + to_string(entity->getGridPos().y) + "\n";
+		//OutputDebugStringA(s.c_str());
+		//return true;
+	}
+
+	if (moveThis)
+	{
+		switch (entity->getEntityType()) {
+		case User:
+			((Player*)entity)->move(direction);
+			map->moveEntity(entity->getGridPos(), entity->getGridPos() + direction);
+			break;
+		case MoveBlock:
+			((Movable*)entity)->move(direction);
+			map->moveEntity(entity->getGridPos(), entity->getGridPos() + direction);
+			break;
+		default:
+			break;
+		}
+		return true;
+
 	}
 
 	return false;

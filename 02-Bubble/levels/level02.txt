@@ -27,9 +27,16 @@ images/blocksBaba.png					-- Tilesheet
 
 
 
-Object BabaB 10 10
+Object BabaM 10 10
 Relation Is 11 10
 Property You 12 10
+Relation And 7 7
+Object WallM 10 8
+Relation Is 11 8
+Property Stop 12 8
 Baba 13 13
-Flag 3 3
+Flag 12 7
+Object FlagM 2 10
+Relation Is 3 10
+Property Win 4 10
 END

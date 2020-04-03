@@ -5,6 +5,7 @@ Movable::Movable(Words word, int typeIndex)
 	entityType = MoveBlock;
 	wordType = word;
 	movableTypeIndex = typeIndex;
+	isUser = false;
 }
 
 Words Movable::getWordType()

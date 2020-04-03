@@ -45,7 +45,10 @@ public:
 	EntityType getEntityType();
 	void setEntityType(EntityType type);
 
+	void setMoving(bool mov);
 
+	bool isPossessed();
+	void setPossessed(bool pos);
 
 
 	string spriteFile = "images/bub.png";
@@ -61,7 +64,8 @@ public:
 	Sprite* sprite;
 	bool bJumping = false;
 	bool bMoving = false;
-	EntityType entityType;
+	EntityType entityType = User;
+	bool isUser = false;
 
 
 private:

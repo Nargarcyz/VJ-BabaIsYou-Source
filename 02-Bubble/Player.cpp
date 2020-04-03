@@ -57,7 +57,7 @@ Player::Player()
 Player::Player(PlayerType type)
 {
 	this->type = type;
-	entityType = User;
+	entityType = (EntityType)0;
 	switch (type)
 	{
 	case Baba_p:
@@ -139,7 +139,8 @@ void Player::init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram, co
 
 	this->spriteSize = spriteSize;
 	//spritesheet.loadFromFile("images/bub.png", TEXTURE_PIXEL_FORMAT_RGBA);
-	
+	entityType = (EntityType)0;
+	isUser = true;
 
 	switch (type)
 	{

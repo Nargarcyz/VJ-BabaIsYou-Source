@@ -14,6 +14,7 @@ void Entity::init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram, co
 	moveDestination = glm::ivec2(NULL, NULL);
 
 	int e = Baba;
+	isUser = false;
 	this->spriteSize = spriteSize;
 	//spritesheet.loadFromFile("images/bub.png", TEXTURE_PIXEL_FORMAT_RGBA);
 	spritesheet.loadFromFile(spriteFile, TEXTURE_PIXEL_FORMAT_RGBA);
@@ -77,6 +78,20 @@ void Entity::setGridPos(glm::ivec2 pos)
 //	bMoving = true;
 //	moveDestination = posPlayer + increment * spriteSize;
 //}
+
+void Entity::setMoving(bool mov) {
+	bMoving = mov;
+}
+
+bool Entity::isPossessed()
+{
+	return isUser;
+}
+
+void Entity::setPossessed(bool pos)
+{
+	isUser = pos;
+}
 
 void Entity::move(glm::ivec2 newGridPos)
 {

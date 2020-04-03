@@ -25,6 +25,7 @@ public:
 	void switchPos(int key);
 	void init(const string levelFile);
 	bool createInstances(const string& levelFile);
+	void applyRule(Objects obj, Properties prop);
 	//void applyRule(vector<Objects>* objs, vector<Relations*> rel, vector<Properties*> prop);
 	void applyRule(Objects obj, Relations rel, Properties prop);
 	void checkRules();
@@ -50,9 +51,10 @@ private:
 
 	vector<Movable*> movables;
 	ShaderProgram texProgram;
-	float currentTime;
+	float currentTime, clickedTime;
 	glm::mat4 projection;
-	bool completed;
+	bool completed = false;
+	bool needToRecheckRules = false;
 
 };
 

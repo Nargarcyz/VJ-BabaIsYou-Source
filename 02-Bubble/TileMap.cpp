@@ -53,9 +53,9 @@ Entity* TileMap::getEntity(glm::ivec2 testPosition, bool& success, bool& outOfBo
 	//string s = typeid(gridMap[x * mapSize.x + y]).name();
 	int x = testPosition.x;
 	int y = testPosition.y;
-	/*string s = "\nChecking X: " + to_string(x) + "Y: " + to_string(y);
+	string s = "\nChecking X: " + to_string(x) + "Y: " + to_string(y);
 	OutputDebugStringA(s.c_str());
-	s = "\nMax X: " + to_string(gridMapSize.x) + " Max Y : " + to_string(gridMapSize.y);
+	/*s = "\nMax X: " + to_string(gridMapSize.x) + " Max Y : " + to_string(gridMapSize.y);
 	OutputDebugStringA(s.c_str());*/
 
 	//if (x<0 || x>mapSize.x || y<0 || y>mapSize.y)
