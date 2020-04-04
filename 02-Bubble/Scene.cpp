@@ -105,7 +105,7 @@ bool Scene::createInstances(const string& levelFile)
 			map->addEntity(pos.x, pos.y, (Entity*)mov);
 			movables.push_back(mov);
 		}
-		else if (type == "Baba" || type == "Flag")
+		else// if (type == "Baba" || type == "Flag")
 		{
 			string name;
 			glm::vec2 pos;
@@ -154,6 +154,7 @@ void Scene::applyRule(Objects obj, Properties prop)
 			case You:
 				//changePossession((PlayerType)obj);
 				possessables[i]->setPossessed(true);
+				noPossession = false;
 				map->removeEntity(possessables[i]->getGridPos());
 
 				break;
@@ -169,6 +170,9 @@ void Scene::applyRule(Objects obj, Properties prop)
 				possessables[i]->setWin(true);
 				map->addEntity(possessables[i]->getGridPos().x, possessables[i]->getGridPos().y, possessables[i]);
 				break;
+			case Push:
+				possessables[i]->setPushable(true);
+				map->addEntity(possessables[i]->getGridPos().x, possessables[i]->getGridPos().y, possessables[i]);
 			default:
 				break;
 			}
@@ -207,7 +211,9 @@ void Scene::checkRules() {
 	{
 		((Player*)possessables[i])->setStop(false);
 		((Player*)possessables[i])->setWin(false);
+		((Player*)possessables[i])->setPushable(false);
 		possessables[i]->setPossessed(false);
+		noPossession = true;
 		//changePossession(NoPl);
 	}
 
@@ -215,7 +221,7 @@ void Scene::checkRules() {
 	Relations rel;
 	
 	OutputDebugStringA("\t---RECHECKING RULES ---\n");
-
+	
 	for (int i = 0; i < movables.size(); i++)
 	{
 		if (movables[i]->getWordType() == Object)
@@ -224,6 +230,7 @@ void Scene::checkRules() {
 			vector<Movable*> line = getMovableLine(movables[i]->getGridPos(), glm::vec2(1, 0));
 			if (!line.empty())
 			{
+
 				string lineInfo = "";
 				int separator = 0;
 				for (int i = 0; i < line.size(); i++)
@@ -454,7 +461,7 @@ void Scene::init(const string levelFile)
 	map = TileMap::createTileMap(levelFile, glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
 	createInstances(levelFile);
 	
-
+	
 
 	/*baba = new Player(Baba_p);
 	baba->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, glm::ivec2(24, 24));
@@ -507,7 +514,7 @@ void Scene::init(const string levelFile)
 
 
 	vector<glm::ivec2> wallLocs;
-	map->getWallLocations(wallLocs);
+	map->getEntityLocations(wallLocs,1);
 	for (int i = 0; i < wallLocs.size(); i++)
 	{
 		Player* wall = new Player(Wall_p);
@@ -526,6 +533,26 @@ void Scene::init(const string levelFile)
 
 	}
 
+	vector<glm::ivec2> rockLocs;
+	map->getEntityLocations(rockLocs, 3);
+	for (int i = 0; i < rockLocs.size(); i++)
+	{
+		Player* rock = new Player(Rock_p);
+		//wall->changePlayerType(PlayerType::Wall);
+		rock->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, glm::ivec2(24, 24));
+		rock->setPosition(glm::vec2(rockLocs[i].x, (rockLocs[i].y)), map->getTileSize());
+		//wall->setTileMap(map);
+		map->addEntity(rockLocs[i].x, rockLocs[i].y, (Entity*)rock);
+		rock->setCollision(true);
+
+		//OutputDebugStringA(("\n\t" + to_string(wall->getEntityType() == User)).c_str());
+
+
+		//walls.push_back(wall);
+		possessables.push_back(rock);
+
+	}
+
 
 
 
@@ -537,6 +564,7 @@ void Scene::init(const string levelFile)
 	interactable->setTileMap(map);*/
 
 	//changePossession(Baba_p);
+	std::reverse(possessables.begin(), possessables.end());
 	checkRules();
 	projection = glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT - 1), 0.f);
 	currentTime = 0.0f;
@@ -562,12 +590,48 @@ void Scene::update(int deltaTime)
 		}
 	}
 
+	if (noPossession)
+	{
+
+		if (Game::instance().backgroundMusic->getSoundSource() == Game::instance().levelMusic)
+		{
+			Game::instance().soundEngine->stopAllSounds();
+			Game::instance().backgroundMusic = Game::instance().soundEngine->play2D(Game::instance().deadMusic, true, false, true);
+		}
+
+		if (Game::instance().getKey(13)) {
+			Game::instance().changeActiveScene(-1);
+		}
+
+		for (int i = 0; i < possessables.size(); i++)
+		{
+			possessables[i]->update(deltaTime);
+		}
+
+		for (int i = 0; i < movables.size(); i++)
+		{
+			movables[i]->update(deltaTime);
+		}
+		return;
+	}
+
 	if (!moving && completed)
 	{
 		OutputDebugStringA("COMPLETED");
 		if (Game::instance().getKey(13)) {
 			Game::instance().changeActiveScene(-1);
 		}
+
+		for (int i = 0; i < possessables.size(); i++)
+		{
+			possessables[i]->update(deltaTime);
+		}
+
+		for (int i = 0; i < movables.size(); i++)
+		{
+			movables[i]->update(deltaTime);
+		}
+
 		return;
 	}
 	
@@ -773,19 +837,24 @@ bool Scene::push(Entity* entity, glm::ivec2& direction)
 		OutputDebugStringA(("\n\t"+st).c_str());
 		if (e->getEntityType() == User)
 		{
-			OutputDebugStringA("Pushing a possessable");
+			OutputDebugStringA("\nPushing a possessable");
 			if (((Player*)e)->canWin())
 			{
 				moveThis = true;
 				completed = true;
 			}else if (e->stops())// && entity->getEntityType() == User && ((Player*)entity)->getPlayerType() == possessed)
 			{
-				OutputDebugStringA("Cant friggin push man, it stops");
+				OutputDebugStringA("\nCant friggin push man, it stops");
 				return false;
+			}
+			else if (e->isPushable() && push(e, direction))
+			{
+				OutputDebugStringA("\nThas a pushable");
+				moveThis = true;
 			}
 			else if (push(e, direction))
 			{
-				OutputDebugStringA("Push it to the fucking limit");
+				OutputDebugStringA("\nPush it to the fucking limit");
 				moveThis = true;
 			}
 		}

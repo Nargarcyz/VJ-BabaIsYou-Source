@@ -17,7 +17,9 @@ void TextScene::init() {
 	projection = glm::ortho(0.f, float(glutGet(GLUT_WINDOW_WIDTH) - 1), float(glutGet(GLUT_WINDOW_HEIGHT) - 1), 0.f);
 	currentTime = 0.0f;
 	clickedTime = 0.0f;
-
+	Game::instance().backgroundMusic = Game::instance().soundEngine->play2D(Game::instance().menuMusic,true,false,true);
+	Game::instance().backgroundMusic->setVolume(0.5f);
+	
 	//Text titleText;
 	if (!titleText.init("fonts/OpenSans-Regular.ttf"))
 		cout << "Could not load font!!!" << endl;
@@ -46,7 +48,7 @@ void TextScene::init() {
 
 void TextScene::update(int deltaTime) {
 	currentTime += deltaTime;
-
+	
 
 	if (Game::instance().getSpecialKey(GLUT_KEY_UP)) {
 		if (currentTime-clickedTime > 100)
@@ -69,6 +71,7 @@ void TextScene::update(int deltaTime) {
 			{
 			case 0:
 				Game::instance().changeActiveScene(-1);
+
 				break;
 			case 1:
 				Game::instance().changeActiveScene(-2);
@@ -82,9 +85,10 @@ void TextScene::update(int deltaTime) {
 			clickedTime = currentTime;
 		}
 	}
-	if (selection > 2) selection = 2;
-	if (selection < 0) selection = 0;
-
+	/*if (selection > 2) selection = 2;
+	if (selection < 0) selection = 0;*/
+	selection = (selection >= 0) ? selection % 3 : 3 - 1;
+	if (clickedTime == currentTime) Game::instance().soundEngine->play2D("sounds/menuSound.ogg");
 
 	switch (selection)
 	{
@@ -160,6 +164,7 @@ void TextScene::render()
 	glm::mat4 modelview;
 
 	glClearColor(21/255., 24/255., 31/255., 0);
+	//glClearColor(0.03, 0.03, 0.03,0);
 	texProgram.use();
 	texProgram.setUniformMatrix4f("projection", projection);
 	texProgram.setUniform4f("color", 1.0f, 1.0f, 1.0f, 1.0f);
@@ -170,13 +175,13 @@ void TextScene::render()
 	glm::vec2 prevPos = glm::vec2(0, glutGet(GLUT_WINDOW_HEIGHT) / 4);
 	titleText.render("BABA IS YOU CLONE", prevPos, titleTextSize, glm::vec4(1, 1, 1, 1));
 
-
+	string sel = "> ";
 	prevPos.y += titleTextSize + separation;
-	levelSelectText.render("Select Level", prevPos, levelSelectTextSize, glm::vec4(1, 1, 1, 1));
+	levelSelectText.render(selection == 0 ?  (sel + "Select Level") : "Select Level", prevPos, levelSelectTextSize, glm::vec4(1, 1, 1, 1));
 	prevPos.y += levelSelectTextSize + separation;
-	helpText.render("Help", prevPos, helpTextSize, glm::vec4(1, 1, 1, 1));
+	helpText.render(selection == 1 ? (sel + "Help"): "Help", prevPos, helpTextSize, glm::vec4(1, 1, 1, 1));
 	prevPos.y += helpTextSize + separation;
-	quitText.render("Quit Game", prevPos, quitTextSize, glm::vec4(1, 1, 1, 1));
+	quitText.render(selection == 2 ? (sel + "Quit Game"): "Quit Game", prevPos, quitTextSize, glm::vec4(1, 1, 1, 1));
 }
 
 void TextScene::initShaders()

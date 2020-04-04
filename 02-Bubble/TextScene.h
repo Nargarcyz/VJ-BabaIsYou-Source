@@ -2,7 +2,7 @@
 #include "Scene.h"
 #include "TexturedQuad.h"
 #include "Text.h"
-
+#include <irrKlang.h>
 
 
 class TextScene
@@ -46,5 +46,6 @@ private:
 	float clickedTime;
 
 	bool choosingLevel = false;
+	
 };
 

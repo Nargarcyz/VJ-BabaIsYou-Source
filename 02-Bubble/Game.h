@@ -54,6 +54,11 @@ public:
 
 	irrklang::ISoundEngine* soundEngine;
 	irrklang::ISound* moveSound;
+	irrklang::ISound* backgroundMusic;
+	
+	irrklang::ISoundSource* menuMusic;
+	irrklang::ISoundSource* levelMusic;
+	irrklang::ISoundSource* deadMusic;
 	
 private:
 	bool bPlay;                       // Continue to play game?
@@ -67,7 +72,7 @@ private:
 	HelpScreen helpMenu;
 	bool keys[256], specialKeys[256]; // Store key states so that 
 	                                  // we can have access at any time
-
+	
 };
 
 

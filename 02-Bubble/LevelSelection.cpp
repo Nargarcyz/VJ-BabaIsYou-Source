@@ -86,6 +86,7 @@ void LevelSelection::update(int deltaTime)
 			clickedTime = currentTime;
 		}
 	}
+	if (clickedTime == currentTime) Game::instance().soundEngine->play2D("sounds/menuSound.ogg");
 	selectedLevel = (selectedLevel>=0) ? selectedLevel % levels : levels-1;
 }
 

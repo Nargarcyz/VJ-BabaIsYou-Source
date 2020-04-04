@@ -54,6 +54,7 @@ private:
 	float currentTime, clickedTime;
 	glm::mat4 projection;
 	bool completed = false;
+	bool noPossession = true;
 	bool needToRecheckRules = false;
 
 };

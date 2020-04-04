@@ -87,6 +87,7 @@ void HelpScreen::update(int deltaTime)
 			clickedTime = currentTime;
 		}
 	}
+	if (clickedTime == currentTime) Game::instance().soundEngine->play2D("sounds/menuSound.ogg");
 }
 
 void HelpScreen::render()

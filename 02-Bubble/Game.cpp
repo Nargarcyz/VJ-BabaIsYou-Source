@@ -12,8 +12,17 @@ void Game::init()
 	{
 		exit(333);
 	}
-	
-	glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
+	menuMusic = soundEngine->addSoundSourceFromFile("sounds/mainTheme.ogg");
+	menuMusic->setDefaultVolume(0.5f);
+
+	levelMusic = soundEngine->addSoundSourceFromFile("sounds/levelMusic.ogg");
+	levelMusic->setDefaultVolume(0.5f);
+
+	deadMusic = soundEngine->addSoundSourceFromFile("sounds/deadMusic.ogg");
+	deadMusic->setDefaultVolume(0.5f);
+
+	//glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
+	glClearColor(3.1f / 255, 3.1f / 255, 3.1f / 255, 0);
 	//glClearColor(0,0,0,0);
 	
 	mainMenu.init();
@@ -23,32 +32,80 @@ void Game::init()
 
 void Game::changeActiveScene(int sceneId)
 {
+	if (sceneId >0)
+	{
+		if (scene)
+		{
+			delete scene;
+		}
+	}
 	switch (sceneId)
 	{
 	case 0:
 		inMenu = true;
 		menuScreen = 0;
+		/*if (backgroundMusic)
+		{
+			backgroundMusic->stop();
+			backgroundMusic->drop();
+		}
+		backgroundMusic = soundEngine->play2D(menuMusic,true,false,true);
+		backgroundMusic->setVolume(0.5f);*/
+
+		if (backgroundMusic->getSoundSource() != menuMusic)
+		{
+			soundEngine->stopAllSounds();
+			backgroundMusic = soundEngine->play2D(menuMusic, true, false, true);
+		}
+
 		/*if (scene != NULL)
 			delete scene;*/
 		break;
 	case -1:
 		inMenu = true;
 		menuScreen = 1;
+		if (backgroundMusic->getSoundSource() != menuMusic)
+		{
+			soundEngine->stopAllSounds();
+			backgroundMusic = soundEngine->play2D(menuMusic, true, false, true);
+		}
 		break;
 	case -2:
 		inMenu = true;
 		menuScreen = 2;
+		if (backgroundMusic->getSoundSource() != menuMusic)
+		{
+			soundEngine->stopAllSounds();
+			backgroundMusic = soundEngine->play2D(menuMusic, true, false, true);
+		}
 		break;
 
 	default:
 		inMenu = false;
+		/*if (backgroundMusic)
+		{
+			backgroundMusic->stop();
+			backgroundMusic->drop();
+		}*/
 		menuScreen = 0;
+		
 		scene = new Scene();
 		const string level = "levels/level0" + to_string(sceneId) + ".txt";
 		scene->init(level);
+
+		if (backgroundMusic->getSoundSource() != levelMusic)
+		{
+			soundEngine->stopAllSounds();
+			backgroundMusic = soundEngine->play2D(levelMusic, true, false, true);
+		}
+
+		/*backgroundMusic = soundEngine->play2D(levelMusic, true, false, true);
+		backgroundMusic->setVolume(0.5f);*/
 		break;
 	}
 }
+
+
 
 bool Game::update(int deltaTime)
 {

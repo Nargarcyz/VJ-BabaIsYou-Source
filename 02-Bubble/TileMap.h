@@ -44,11 +44,8 @@ public:
 
 
 	int getTileSize() const { return tileSize; }
-	void getWallLocations(vector<glm::ivec2>& wallLocs);
-	bool collisionMoveLeft(const glm::ivec2& pos, const glm::ivec2& size) const;
-	bool collisionMoveRight(const glm::ivec2& pos, const glm::ivec2& size) const;
-	bool collisionMoveDown(const glm::ivec2& pos, const glm::ivec2& size, int* posY) const;
-	bool collisionMoveUp(const glm::ivec2& pos, const glm::ivec2& size, int* posY) const;
+	void getEntityLocations(vector<glm::ivec2>& wallLocs,int tilemapId);
+
 
 private:
 	bool loadLevel(const string& levelFile);

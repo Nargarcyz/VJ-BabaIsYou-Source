@@ -50,11 +50,14 @@ public:
 	bool isPossessed();
 	void setPossessed(bool pos);
 
+	bool isPushable();
+	void setPushable(bool push);
+
 
 	string spriteFile = "images/bub.png";
 	glm::vec2 spriteTCoords = glm::vec2(.25f, .25f);
 	bool isStop = false;
-	float fMoveSpeed = 0.005f;
+	float fMoveSpeed = 0.007f;
 	float fMoveFraction;
 	glm::ivec2 moveDestination;
 	glm::ivec2 tileMapDispl, posPlayer;
@@ -66,6 +69,7 @@ public:
 	bool bMoving = false;
 	EntityType entityType = User;
 	bool isUser = false;
+	bool isPush = false;
 
 
 private:

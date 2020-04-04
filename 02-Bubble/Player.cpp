@@ -66,10 +66,12 @@ Player::Player(PlayerType type)
 		break;
 	case Wall_p:
 		spriteFile = "images/wall.png";
-		spriteTCoords = glm::vec2(1, 1);
 		break;
 	case Flag_p:
 		spriteFile = "images/flag.png";
+		break;
+	case Rock_p:
+		spriteFile = "images/rock.png";
 		break;
 	default:
 		break;

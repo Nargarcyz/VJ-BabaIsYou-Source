@@ -93,6 +93,16 @@ void Entity::setPossessed(bool pos)
 	isUser = pos;
 }
 
+bool Entity::isPushable()
+{
+	return isPush;
+}
+
+void Entity::setPushable(bool push)
+{
+	isPush = push;
+}
+
 void Entity::move(glm::ivec2 newGridPos)
 {
 	bMoving = true;
