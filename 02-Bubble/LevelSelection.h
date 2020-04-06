@@ -22,6 +22,7 @@ private:
 	int selectedLevel = 0;
 	float currentTime;
 	float clickedTime;
+	
 };
 
 

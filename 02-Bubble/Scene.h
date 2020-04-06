@@ -20,6 +20,7 @@ class Scene
 
 public:
 	Scene();
+	Scene(int levelId);
 	~Scene();
 
 	void switchPos(int key);
@@ -33,6 +34,9 @@ public:
 	void update(int deltaTime);
 	void render();
 	bool push(Entity* entity, glm::ivec2& direction);
+
+	void levelCompleted();
+	void renderLevelCompletedText();
 
 private:
 	void initShaders();
@@ -56,6 +60,9 @@ private:
 	bool completed = false;
 	bool noPossession = true;
 	bool needToRecheckRules = false;
+	int levelId;
+
+	Text levelCompletedText;
 
 };
 

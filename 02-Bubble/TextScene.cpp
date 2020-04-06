@@ -14,7 +14,7 @@ TextScene::~TextScene()
 void TextScene::init() {
 	initShaders();
 
-	projection = glm::ortho(0.f, float(glutGet(GLUT_WINDOW_WIDTH) - 1), float(glutGet(GLUT_WINDOW_HEIGHT) - 1), 0.f);
+	projection = glm::ortho(0.f, float(glutGet(GLUT_WINDOW_WIDTH) -1), float(glutGet(GLUT_WINDOW_HEIGHT) -1), 0.f);
 	currentTime = 0.0f;
 	clickedTime = 0.0f;
 	Game::instance().backgroundMusic = Game::instance().soundEngine->play2D(Game::instance().menuMusic,true,false,true);

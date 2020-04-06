@@ -189,8 +189,9 @@ bool TileMap::loadLevel(const string& levelFile)
 
 void TileMap::render() const
 {
-	glClearColor(0.03, 0.03, 0.03, 0);
-	//glClearColor(1.0, 1.0, 1.0, 0.0);
+	//glClearColor(0.03, 0.03, 0.03, 0);
+	glClearColor(0.141176470588235, 0.172549019607843, 0.278431372549020, 0.0);
+
 	glEnable(GL_TEXTURE_2D);
 	tilesheet.use();
 	glBindVertexArray(vao);

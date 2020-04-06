@@ -13,10 +13,17 @@
 #define INIT_PLAYER_X_TILES 14
 #define INIT_PLAYER_Y_TILES 15
 
-
 Scene::Scene()
 {
 	map = NULL;
+
+}
+
+Scene::Scene(int levelId)
+{
+	map = NULL;
+	this->levelId = levelId;
+	
 }
 
 Scene::~Scene()
@@ -165,7 +172,7 @@ void Scene::applyRule(Objects obj, Properties prop)
 			case Win:
 				if (possessables[i]->isPossessed())
 				{
-					completed = true;
+					levelCompleted();
 				}
 				possessables[i]->setWin(true);
 				map->addEntity(possessables[i]->getGridPos().x, possessables[i]->getGridPos().y, possessables[i]);
@@ -456,7 +463,8 @@ vector<Movable*> Scene::getMovableLine(glm::vec2 startPos, glm::vec2 direction)
 void Scene::init(const string levelFile)
 {
 	initShaders();
-
+	if (!levelCompletedText.init("fonts/OpenSans-Regular.ttf"))
+		cout << "Could not load font!!!" << endl;
 
 	map = TileMap::createTileMap(levelFile, glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
 	createInstances(levelFile);
@@ -566,8 +574,10 @@ void Scene::init(const string levelFile)
 	//changePossession(Baba_p);
 	std::reverse(possessables.begin(), possessables.end());
 	checkRules();
-	projection = glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT - 1), 0.f);
+	//projection = glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT - 1), 0.f);
+	
 	currentTime = 0.0f;
+	clickedTime = currentTime;
 }
 
 
@@ -593,7 +603,7 @@ void Scene::update(int deltaTime)
 	if (noPossession)
 	{
 
-		if (Game::instance().backgroundMusic->getSoundSource() == Game::instance().levelMusic)
+		if (Game::instance().backgroundMusic->getSoundSource() != Game::instance().deadMusic)
 		{
 			Game::instance().soundEngine->stopAllSounds();
 			Game::instance().backgroundMusic = Game::instance().soundEngine->play2D(Game::instance().deadMusic, true, false, true);
@@ -617,10 +627,16 @@ void Scene::update(int deltaTime)
 
 	if (!moving && completed)
 	{
+		if (Game::instance().backgroundMusic->getSoundSource() != Game::instance().winMusic)
+		{
+			Game::instance().soundEngine->stopAllSounds();
+			Game::instance().backgroundMusic = Game::instance().soundEngine->play2D(Game::instance().winMusic, false, false, true);
+		}
 		OutputDebugStringA("COMPLETED");
 		if (Game::instance().getKey(13)) {
 			Game::instance().changeActiveScene(-1);
 		}
+		
 
 		for (int i = 0; i < possessables.size(); i++)
 		{
@@ -653,6 +669,7 @@ void Scene::update(int deltaTime)
 	glm::ivec2 movementDirection = glm::ivec2(0, 0);
 	if (!moving)
 	{
+		OutputDebugStringA("\nCAN MOVE");
 		if (needToRecheckRules)
 		{
 			checkRules();
@@ -838,10 +855,10 @@ bool Scene::push(Entity* entity, glm::ivec2& direction)
 		if (e->getEntityType() == User)
 		{
 			OutputDebugStringA("\nPushing a possessable");
-			if (((Player*)e)->canWin())
+			if (((Player*)e)->canWin() && entity->isPossessed())
 			{
 				moveThis = true;
-				completed = true;
+				levelCompleted();
 			}else if (e->stops())// && entity->getEntityType() == User && ((Player*)entity)->getPlayerType() == possessed)
 			{
 				OutputDebugStringA("\nCant friggin push man, it stops");
@@ -852,6 +869,9 @@ bool Scene::push(Entity* entity, glm::ivec2& direction)
 				OutputDebugStringA("\nThas a pushable");
 				moveThis = true;
 			}
+			/*else {
+				moveThis = true;
+			}*/
 			else if (push(e, direction))
 			{
 				OutputDebugStringA("\nPush it to the fucking limit");
@@ -907,15 +927,27 @@ bool Scene::push(Entity* entity, glm::ivec2& direction)
 	return false;
 }
 
+void Scene::levelCompleted()
+{
+	completed = true;
+	Game::instance().levelCompletedEvent(this->levelId);
+}
+
+void Scene::renderLevelCompletedText() {
+	levelCompletedText.render("Level Complete!", glm::vec2(glutGet(GLUT_WINDOW_HEIGHT /2), glutGet( GLUT_WINDOW_WIDTH / 2)), 20, glm::vec4(1, 1, 1, 1));
+}
+
 
 void Scene::render()
 {
 	glm::mat4 modelview;
 
 	texProgram.use();
+	projection = glm::ortho(0.f, float(glutGet(GLUT_WINDOW_WIDTH)), float(glutGet(GLUT_WINDOW_HEIGHT)), 0.f);
 	texProgram.setUniformMatrix4f("projection", projection);
 	texProgram.setUniform4f("color", 1.0f, 1.0f, 1.0f, 1.0f);
 	modelview = glm::mat4(1.0f);
+	modelview = glm::translate(modelview, glm::vec3(abs(glutGet(GLUT_WINDOW_WIDTH)-SCREEN_WIDTH)/2, abs(glutGet(GLUT_WINDOW_HEIGHT) - SCREEN_HEIGHT)/2,0));
 	texProgram.setUniformMatrix4f("modelview", modelview);
 	texProgram.setUniform2f("texCoordDispl", 0.f, 0.f);
 	//yaga->render();
@@ -931,6 +963,11 @@ void Scene::render()
 	for (int i = 0; i < movables.size(); i++)
 	{
 		movables[i]->render();
+	}
+
+	if (completed)
+	{
+			renderLevelCompletedText();
 	}
 
 	/*for (int i = 0; i < walls.size(); i++)

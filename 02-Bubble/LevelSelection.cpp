@@ -53,6 +53,8 @@ void LevelSelection::init() {
 	if (!backText.init("fonts/OpenSans-Regular.ttf"))
 		cout << "Could not load font!!!" << endl;
 
+	
+
 
 }
 
@@ -82,8 +84,11 @@ void LevelSelection::update(int deltaTime)
 	else if (Game::instance().getKey(13)) {
 		if (currentTime - clickedTime > 100)
 		{
-			Game::instance().changeActiveScene(selectedLevel + 1);
-			clickedTime = currentTime;
+			if (Game::instance().isLevelUnlocked(selectedLevel+1))
+			{
+				Game::instance().changeActiveScene(selectedLevel + 1);
+				clickedTime = currentTime;
+			}
 		}
 	}
 	if (clickedTime == currentTime) Game::instance().soundEngine->play2D("sounds/menuSound.ogg");
@@ -130,7 +135,20 @@ void LevelSelection::render()
 
 	for (int i = 0; i < levels; i++)
 	{	
-		backText.render(to_string(i+1), lvlPos + glm::vec2(offset * i,0), 20, glm::vec4(1, 1, 1, 1));
+		if (!Game::instance().isLevelUnlocked(i+1))
+		{
+			backText.render(to_string(i + 1), lvlPos + glm::vec2(offset * i, 0), 20, glm::vec4(.3, .3, .3, 1));
+		}
+		else {
+			if (!Game::instance().isLevelCompleted(i+1))
+			{
+				backText.render(to_string(i+1), lvlPos + glm::vec2(offset * i,0), 20, glm::vec4(1, 1, 1, 1));
+
+			}
+			else {
+				backText.render(to_string(i + 1), lvlPos + glm::vec2(offset * i, 0), 20, glm::vec4(0, 1, 0, 1));
+			}
+		}
 		if (i == selectedLevel)
 		{
 			drawSquare(1.25/2,-0.25, 2.5);

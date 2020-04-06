@@ -31,6 +31,11 @@ public:
 	
 	void init();
 
+	void levelCompletedEvent(int levelId);
+
+
+	bool isLevelCompleted(int levelId);
+	bool isLevelUnlocked(int levelId);
 	//void changeActiveLevel(int levelId);
 	
 	bool update(int deltaTime);
@@ -59,6 +64,8 @@ public:
 	irrklang::ISoundSource* menuMusic;
 	irrklang::ISoundSource* levelMusic;
 	irrklang::ISoundSource* deadMusic;
+	irrklang::ISoundSource* winMusic;
+	float aspectRatio;
 	
 private:
 	bool bPlay;                       // Continue to play game?
@@ -73,6 +80,10 @@ private:
 	bool keys[256], specialKeys[256]; // Store key states so that 
 	                                  // we can have access at any time
 	
+	vector<bool> completedLevels;
+	vector<bool> unlockedLevels;
+	int levels = 5;
+
 };
 
 

@@ -12,6 +12,7 @@ void Game::init()
 	{
 		exit(333);
 	}
+	aspectRatio = glutGet(GLUT_WINDOW_WIDTH) / glutGet(GLUT_WINDOW_HEIGHT);
 	menuMusic = soundEngine->addSoundSourceFromFile("sounds/mainTheme.ogg");
 	menuMusic->setDefaultVolume(0.5f);
 
@@ -21,6 +22,13 @@ void Game::init()
 	deadMusic = soundEngine->addSoundSourceFromFile("sounds/deadMusic.ogg");
 	deadMusic->setDefaultVolume(0.5f);
 
+	winMusic = soundEngine->addSoundSourceFromFile("sounds/winMusic.ogg");
+	winMusic->setDefaultVolume(0.5f);
+
+	completedLevels = vector<bool>(5, 0);
+	unlockedLevels = vector<bool>(5, 0);
+	unlockedLevels[0] = 1;
+
 	//glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
 	glClearColor(3.1f / 255, 3.1f / 255, 3.1f / 255, 0);
 	//glClearColor(0,0,0,0);
@@ -28,6 +36,24 @@ void Game::init()
 	mainMenu.init();
 	levelSelection.init();
 	helpMenu.init();
+}
+
+void Game::levelCompletedEvent(int levelId) {
+	completedLevels[levelId - 1] = 1;
+	if (levelId <= levels)
+	{
+		unlockedLevels[levelId] = 1;
+	}
+}
+
+bool Game::isLevelCompleted(int levelId)
+{
+	return completedLevels[levelId - 1];
+}
+
+bool Game::isLevelUnlocked(int levelId)
+{
+	return unlockedLevels[levelId-1];
 }
 
 void Game::changeActiveScene(int sceneId)
@@ -89,7 +115,7 @@ void Game::changeActiveScene(int sceneId)
 		}*/
 		menuScreen = 0;
 		
-		scene = new Scene();
+		scene = new Scene(sceneId);
 		const string level = "levels/level0" + to_string(sceneId) + ".txt";
 		scene->init(level);
 
@@ -109,6 +135,8 @@ void Game::changeActiveScene(int sceneId)
 
 bool Game::update(int deltaTime)
 {
+	aspectRatio = glutGet(GLUT_WINDOW_WIDTH) / glutGet(GLUT_WINDOW_HEIGHT);
+	
 	if (inMenu)
 	{
 		switch (menuScreen)

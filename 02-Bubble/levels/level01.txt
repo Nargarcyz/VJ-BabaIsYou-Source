@@ -34,8 +34,8 @@ Relation And 8 13
 Object WallM 10 15
 Relation Is 11 15
 Property Stop 12 15
-Baba 13 13
-Flag 12 7
+Baba 8 9
+Flag 16 9
 Object FlagM 2 10
 Relation Is 3 10
 Property Win 4 10
