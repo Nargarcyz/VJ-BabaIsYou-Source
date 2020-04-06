@@ -65,6 +65,7 @@ public:
 	irrklang::ISoundSource* levelMusic;
 	irrklang::ISoundSource* deadMusic;
 	irrklang::ISoundSource* winMusic;
+	irrklang::ISoundSource* sinkSound;
 	float aspectRatio;
 	
 private:

@@ -25,6 +25,11 @@ void Game::init()
 	winMusic = soundEngine->addSoundSourceFromFile("sounds/winMusic.ogg");
 	winMusic->setDefaultVolume(0.5f);
 
+	sinkSound = soundEngine->addSoundSourceFromFile("sounds/sinkSound.ogg");
+	sinkSound->setDefaultVolume(0.5f);
+
+	
+
 	completedLevels = vector<bool>(5, 0);
 	unlockedLevels = vector<bool>(5, 1);
 	unlockedLevels[0] = 1;

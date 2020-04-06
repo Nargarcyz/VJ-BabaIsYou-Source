@@ -73,6 +73,9 @@ Player::Player(PlayerType type)
 	case Rock_p:
 		spriteFile = "images/rock.png";
 		break;
+	case Water_p:
+		spriteFile = "images/water.png";
+		break;
 	default:
 		break;
 	}

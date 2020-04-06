@@ -109,6 +109,9 @@ void Entity::move(glm::ivec2 newGridPos)
 	moveDestination = posPlayer + newGridPos * spriteSize;
 }
 
+bool Entity::canSink() { return isSink; }
+void Entity::setSink(bool sink) { isSink = sink; }
+
 void Entity::update(int deltaTime)
 {
 	//glm::ivec2 spriteSize = glm::ivec2(32, 32);

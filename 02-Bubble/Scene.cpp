@@ -164,12 +164,12 @@ void Scene::extractEntities(){
 			case 2:
 			case 3:
 			case 4:
-			case 5: {
+			case 5:
+			case 6:{
 				Player* ent = new Player(static_cast<PlayerType>(tile - 1));
 				ent->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, glm::ivec2(24, 24));
 				ent->setPosition(glm::vec2(i, j), map->getTileSize());
 				map->addEntity(i, j, (Entity*)ent);
-				ent->setCollision(true);
 				if (static_cast<PlayerType>(tile - 1) == Baba_p)
 				{
 					possessables.insert(possessables.begin(), ent);
@@ -177,12 +177,17 @@ void Scene::extractEntities(){
 					possessables.push_back(ent);
 				break;
 			}
+			case 7:
+			case 8:
+			case 9:
+				continue;
 				
 			default:
-				if (tile != 0 && tile != 1 && tile != 7 && tile != 18 && tile != 19)
+				if (tile != 0 && tile != 1 )//&& tile != 7 && tile != 18 && tile != 19)
 				{
+	
 					int iType, index;
-					switch (tile/4)
+					switch (tile/5)
 					{
 					case 2:
 						iType = Property;
@@ -196,7 +201,7 @@ void Scene::extractEntities(){
 					default:
 						break;
 					}
-					index = (tile % 4) + 1;
+					index = (tile % 5) + 1;
 					Movable* mov = new Movable((Words)iType, index);
 					mov->init(glm::ivec2(0, 0), texProgram, glm::ivec2(24, 24));
 					mov->setPosition(glm::vec2(i,j), map->getTileSize());
@@ -221,7 +226,7 @@ void Scene::applyRule(Objects obj, Properties prop)
 			case You:
 				//changePossession((PlayerType)obj);
 				possessables[i]->setPossessed(true);
-				noPossession = false;
+				//noPossession = false;
 				map->removeEntity(possessables[i]->getGridPos());
 
 				break;
@@ -240,6 +245,11 @@ void Scene::applyRule(Objects obj, Properties prop)
 			case Push:
 				possessables[i]->setPushable(true);
 				map->addEntity(possessables[i]->getGridPos().x, possessables[i]->getGridPos().y, possessables[i]);
+				break;
+			case Sink:
+				possessables[i]->setSink(true);
+				map->addEntity(possessables[i]->getGridPos().x, possessables[i]->getGridPos().y, possessables[i]);
+				break;
 			default:
 				break;
 			}
@@ -283,8 +293,9 @@ void Scene::checkRules() {
 		((Player*)possessables[i])->setStop(false);
 		((Player*)possessables[i])->setWin(false);
 		((Player*)possessables[i])->setPushable(false);
+		((Player*)possessables[i])->setSink(false);
 		possessables[i]->setPossessed(false);
-		noPossession = true;
+		//noPossession = true;
 		//changePossession(NoPl);
 	}
 
@@ -661,12 +672,17 @@ void Scene::update(int deltaTime)
 
 	bool moving = false;
 	bool move = false;
+	noPossession = true;
 	for (int i = 0; i < possessables.size(); i++)
 	{
 		if (possessables[i]->isMoving())
 		{
 			moving = true;
 			break;
+		}
+		if (possessables[i]->isPossessed())
+		{
+			noPossession = false;
 		}
 	}
 
@@ -678,6 +694,41 @@ void Scene::update(int deltaTime)
 			break;
 		}
 	}
+	for (int i = 0; i < possessables.size(); i++)
+	{
+		if (possessables[i]->isDestroyed)
+		{
+			possessables.erase(possessables.begin() + i);
+		}
+		else
+			possessables[i]->update(deltaTime);
+	}
+
+
+	//Remove entities in the same place
+	for (int i = 0; i < possessables.size(); i++)
+	{
+		for (int j = 0; j < possessables.size(); j++)
+		{
+			if (i != j && possessables[i]->getPlayerType() == possessables[j]->getPlayerType() && possessables[i]->getGridPos() == possessables[j]->getGridPos())
+			{
+				//OutputDebugStringA("\n\tSAME POSITION");
+				possessables.erase(possessables.begin() + j);
+			}
+		}
+	}
+
+
+	for (int i = 0; i < movables.size(); i++)
+	{
+		if (possessables[i]->isDestroyed)
+		{
+			possessables.erase(possessables.begin() + i);
+		}
+		else
+			movables[i]->update(deltaTime);
+	}
+	if (moving) return;
 
 
 	if (noPossession)
@@ -685,22 +736,12 @@ void Scene::update(int deltaTime)
 
 		if (Game::instance().backgroundMusic->getSoundSource() != Game::instance().deadMusic)
 		{
-			Game::instance().soundEngine->stopAllSounds();
+			Game::instance().soundEngine->stopAllSoundsOfSoundSource(Game::instance().levelMusic);
 			Game::instance().backgroundMusic = Game::instance().soundEngine->play2D(Game::instance().deadMusic, true, false, true);
 		}
 
 		if (Game::instance().getKey(8)) {
 			Game::instance().changeActiveScene(-1);
-		}
-
-		for (int i = 0; i < possessables.size(); i++)
-		{
-			possessables[i]->update(deltaTime);
-		}
-
-		for (int i = 0; i < movables.size(); i++)
-		{
-			movables[i]->update(deltaTime);
 		}
 		return;
 	}
@@ -712,7 +753,6 @@ void Scene::update(int deltaTime)
 			Game::instance().soundEngine->stopAllSounds();
 			Game::instance().backgroundMusic = Game::instance().soundEngine->play2D(Game::instance().winMusic, false, false, true);
 		}
-		OutputDebugStringA("COMPLETED");
 
 		if (currentTime - completedTime > 3000)
 		{
@@ -722,17 +762,7 @@ void Scene::update(int deltaTime)
 		if (Game::instance().getKey(13)) {
 			Game::instance().changeActiveScene(-1);
 		}
-		
-
-		for (int i = 0; i < possessables.size(); i++)
-		{
-			possessables[i]->update(deltaTime);
-		}
-
-		for (int i = 0; i < movables.size(); i++)
-		{
-			movables[i]->update(deltaTime);
-		}
+	
 
 		return;
 	}
@@ -852,13 +882,12 @@ void Scene::update(int deltaTime)
 
 		for (int i = 0; i < allEntities.size(); i++)
 		{
-			if (allEntities[i]->isMoving())
+			if (!allEntities[i]->isMoving())
 			{
 				for (int j = 0; j < allEntities.size(); j++)
 				{
 					if (!allEntities[j]->isMoving() && allEntities[i]->moveDestination == allEntities[j]->getGridPos())
 					{
-						OutputDebugStringA("\nSAME SPOT STOPPPPPPPPPPPPPPPPPPPPP");
 						allEntities[i]->setMoving(false);
 						allEntities[i]->moveDestination = glm::vec2(NULL, NULL);
 					}
@@ -872,30 +901,7 @@ void Scene::update(int deltaTime)
 	
 
 
-	for (int i = 0; i < possessables.size(); i++)
-	{
-		possessables[i]->update(deltaTime);
-	}
-
-
-	//Remove entities in the same place
-	for (int i = 0; i < possessables.size(); i++)
-	{
-		for (int j = 0; j < possessables.size(); j++)
-		{
-			if (i != j && possessables[i]->getPlayerType() == possessables[j]->getPlayerType() && possessables[i]->getGridPos() == possessables[j]->getGridPos())
-			{
-				OutputDebugStringA("\n\tSAME POSITION");
-				//possessables.erase(possessables.begin() + j);
-			}
-		}
-	}
-
-
-	for (int i = 0; i < movables.size(); i++)
-	{
-		movables[i]->update(deltaTime);
-	}
+	
 
 	
 	
@@ -939,7 +945,14 @@ bool Scene::push(Entity* entity, glm::ivec2& direction)
 			{
 				moveThis = true;
 				levelCompleted();
-			}else if (e->stops())// && entity->getEntityType() == User && ((Player*)entity)->getPlayerType() == possessed)
+			}
+			else if (e->canSink())
+			{
+				entity->isDestroyed = true;
+				Game::instance().soundEngine->play2D(Game::instance().sinkSound, false, false, false);
+				return false;
+			}
+			else if (e->stops())
 			{
 				OutputDebugStringA("\nCant friggin push man, it stops");
 				return false;
@@ -949,18 +962,16 @@ bool Scene::push(Entity* entity, glm::ivec2& direction)
 				OutputDebugStringA("\nThas a pushable");
 				moveThis = true;
 			}
-			/*else {
-				moveThis = true;
-			}*/
-			else if (push(e, direction))
-			{
-				OutputDebugStringA("\nPush it to the fucking limit");
-				moveThis = true;
-			}
+
 		}
 		else if (e->getEntityType() == MoveBlock)
 		{
-			if (push(e, direction))
+			if (e->canSink())
+			{
+				entity->isDestroyed = true;
+				return false;
+			}
+			else if (push(e, direction))
 			{
 				moveThis = true;
 				needToRecheckRules = true;

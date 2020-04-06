@@ -9,7 +9,7 @@
 // Player is basically a Sprite that represents the player. As such it has
 // all properties it needs to track its movement, jumping, and collisions.
 
-enum PlayerType { NoPl = 0,  Baba_p = 1, Flag_p = 2, Wall_p = 3 , Rock_p = 4};
+enum PlayerType { NoPl = 0,  Baba_p = 1, Flag_p = 2, Wall_p = 3 , Rock_p = 4, Water_p = 5};
 
 
 class Player : public Entity

@@ -53,6 +53,9 @@ public:
 	bool isPushable();
 	void setPushable(bool push);
 
+	bool canSink();
+	void setSink(bool sink);
+
 
 	string spriteFile = "images/bub.png";
 	glm::vec2 spriteTCoords = glm::vec2(.25f, .25f);
@@ -70,7 +73,8 @@ public:
 	EntityType entityType = User;
 	bool isUser = false;
 	bool isPush = false;
-
+	bool isSink = false;
+	bool isDestroyed = false;
 
 private:
 	bool test;

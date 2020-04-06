@@ -59,7 +59,7 @@ private:
 	float currentTime, clickedTime, completedTime;
 	glm::mat4 projection;
 	bool completed = false;
-	bool noPossession = true;
+	bool noPossession = false;
 	bool needToRecheckRules = false;
 	int levelId;
 
