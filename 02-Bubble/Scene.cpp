@@ -586,6 +586,7 @@ void Scene::update(int deltaTime)
 	{
 		if (possessables[i]->isDestroyed)
 		{
+			map->removeEntity(possessables[i]->getGridPos());
 			possessables.erase(possessables.begin() + i);
 		}
 		else
@@ -600,6 +601,7 @@ void Scene::update(int deltaTime)
 		{
 			if (i != j && possessables[i]->getPlayerType() == possessables[j]->getPlayerType() && possessables[i]->getGridPos() == possessables[j]->getGridPos())
 			{
+				map->removeEntity(possessables[i]->getGridPos());
 				possessables.erase(possessables.begin() + j);
 			}
 		}
@@ -610,6 +612,7 @@ void Scene::update(int deltaTime)
 	{
 		if (movables[i]->isDestroyed)
 		{
+			map->removeEntity(possessables[i]->getGridPos());
 			movables.erase(movables.begin() + i);
 		}
 		else
@@ -808,19 +811,30 @@ bool Scene::push(Entity* entity, glm::ivec2& direction)
 		// If the entity obtained is a possessable entity
 		if (e->getEntityType() == User)
 		{
+			OutputDebugStringA("\nUser");
 			if (((Player*)e)->canWin() && entity->isPossessed())
 			{
 				moveThis = true;
 				levelCompleted();
+			}			
+			else if (e->stops())
+			{
+				return false;
 			}
 			else if (e->canSink())
 			{
+				OutputDebugStringA("\nCollided sinks");
 				entity->isDestroyed = true;
+				e->isDestroyed = true;
 				Game::instance().soundEngine->play2D(Game::instance().sinkSound, false, false, false);
 				return false;
 			}
-			else if (e->stops())
+			else if (entity->canSink())
 			{
+				OutputDebugStringA("\Collider sinks");
+				entity->isDestroyed = true;
+				e->isDestroyed = true;
+				Game::instance().soundEngine->play2D(Game::instance().sinkSound, false, false, false);
 				return false;
 			}
 			else if (e->isPushable() && push(e, direction))

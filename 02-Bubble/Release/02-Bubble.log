@@ -1,38 +1,6 @@
-﻿  Scene.cpp
-d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(112,29): warning C4244: 'argument': conversion from 'T' to 'int', possible loss of data
-          with
-          [
-              T=float
-          ]
-d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(112,22): warning C4244: 'argument': conversion from 'T' to 'int', possible loss of data
-          with
-          [
-              T=float
-          ]
-d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(74,17): warning C4101: 'it': unreferenced local variable
-d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(120,8): warning C4101: 'type': unreferenced local variable
-d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(223,20): warning C4018: '<': signed/unsigned mismatch
-d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(263,20): warning C4018: '<': signed/unsigned mismatch
-d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(267,20): warning C4018: '<': signed/unsigned mismatch
-d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(271,20): warning C4018: '<': signed/unsigned mismatch
-d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(287,20): warning C4018: '<': signed/unsigned mismatch
-d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(298,23): warning C4018: '<': signed/unsigned mismatch
-d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(327,48): warning C4018: '<': signed/unsigned mismatch
-d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(350,23): warning C4018: '<': signed/unsigned mismatch
-d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(379,50): warning C4018: '<': signed/unsigned mismatch
-d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(283,12): warning C4101: 'rel': unreferenced local variable
-d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(656,20): warning C4018: '<': signed/unsigned mismatch
-d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(669,20): warning C4018: '<': signed/unsigned mismatch
-d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(677,20): warning C4018: '<': signed/unsigned mismatch
-d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(689,20): warning C4018: '<': signed/unsigned mismatch
-d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(691,21): warning C4018: '<': signed/unsigned mismatch
-d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(702,20): warning C4018: '<': signed/unsigned mismatch
-d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(807,21): warning C4018: '<': signed/unsigned mismatch
-d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(861,21): warning C4018: '<': signed/unsigned mismatch
-d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(865,23): warning C4018: '<': signed/unsigned mismatch
-d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(999,20): warning C4018: '<': signed/unsigned mismatch
-d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(1004,20): warning C4018: '<': signed/unsigned mismatch
-d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(152): warning C4715: 'Scene::createInstances': not all control paths return a value
+﻿  TileMap.cpp
+d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\TileMap.cpp(147,75): warning C4305: 'argument': truncation from 'double' to 'GLclampf'
+d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\TileMap.cpp(81): warning C4715: 'TileMap::getEntity': not all control paths return a value
 LINK : warning LNK4075: ignoring '/INCREMENTAL' due to '/OPT:ICF' specification
 SOIL.lib(SOIL.obj) : warning LNK4075: ignoring '/EDITANDCONTINUE' due to '/OPT:ICF' specification
 LINK : warning LNK4098: defaultlib 'MSVCRTD' conflicts with use of other libs; use /NODEFAULTLIB:library

@@ -85,7 +85,7 @@ void Player::move(glm::ivec2 newGridPos)
 	
 
 
-	Game::instance().soundEngine->play2D("sounds/044.ogg");
+	Game::instance().soundEngine->play2D(Game::instance().moveSound,false,false,false);
 	moveDestination = posPlayer + newGridPos * spriteSize;
 
 	

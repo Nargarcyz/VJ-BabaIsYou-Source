@@ -172,11 +172,11 @@ void TileMap::prepareArrays(const glm::vec2& minCoords, ShaderProgram& program)
 				// Non-empty tile
 				nTiles++;
 				posTile = glm::vec2(minCoords.x + i * tileSize, minCoords.y + j * tileSize);
-				if (tile == 0 || tile == 1)
+				if (tile == 0 || tile == 1 || tile == 7)
 				{
-					texCoordTile[0] = glm::vec2(float((tile) % 3) / tilesheetSize.x, float((tile ) / 3) / tilesheetSize.y);
+					texCoordTile[0] = glm::vec2(float((tile) % 5) / tilesheetSize.x, float((tile ) / 5) / tilesheetSize.y);
 				}else
-					texCoordTile[0] = glm::vec2(float(0 % 2) / tilesheetSize.x, float(0 / 2) / tilesheetSize.y);
+					texCoordTile[0] = glm::vec2(float(0 % 5) / tilesheetSize.x, float(0 / 5) / tilesheetSize.y);
 
 				texCoordTile[1] = texCoordTile[0] + tileTexSize;
 				//texCoordTile[0] += halfTexel;

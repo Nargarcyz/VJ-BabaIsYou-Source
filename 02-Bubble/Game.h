@@ -57,7 +57,6 @@ public:
 	
 
 	irrklang::ISoundEngine* soundEngine;
-	irrklang::ISound* moveSound;
 	irrklang::ISound* backgroundMusic;
 	
 	irrklang::ISoundSource* menuMusic;
@@ -65,6 +64,7 @@ public:
 	irrklang::ISoundSource* deadMusic;
 	irrklang::ISoundSource* winMusic;
 	irrklang::ISoundSource* sinkSound;
+	irrklang::ISoundSource* moveSound;
 	float aspectRatio;
 	
 private:

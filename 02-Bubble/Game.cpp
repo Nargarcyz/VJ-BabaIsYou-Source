@@ -26,13 +26,17 @@ void Game::init()
 	winMusic->setDefaultVolume(0.5f);
 
 	sinkSound = soundEngine->addSoundSourceFromFile("sounds/sinkSound.ogg");
-	sinkSound->setDefaultVolume(0.5f);
+
+
+	moveSound = soundEngine->addSoundSourceFromFile("sounds/moveSound.ogg");
+
 
 	
 
 	completedLevels = vector<bool>(5, 0);
 	unlockedLevels = vector<bool>(5, 1);
 	unlockedLevels[0] = 1;
+
 
 	glClearColor(3.1f / 255, 3.1f / 255, 3.1f / 255, 0);
 
