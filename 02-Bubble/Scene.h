@@ -55,7 +55,7 @@ private:
 
 	vector<Movable*> movables;
 	ShaderProgram texProgram;
-	float currentTime, clickedTime;
+	float currentTime, clickedTime, completedTime;
 	glm::mat4 projection;
 	bool completed = false;
 	bool noPossession = true;

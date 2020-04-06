@@ -26,7 +26,7 @@ void Game::init()
 	winMusic->setDefaultVolume(0.5f);
 
 	completedLevels = vector<bool>(5, 0);
-	unlockedLevels = vector<bool>(5, 0);
+	unlockedLevels = vector<bool>(5, 1);
 	unlockedLevels[0] = 1;
 
 	//glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
@@ -135,7 +135,7 @@ void Game::changeActiveScene(int sceneId)
 
 bool Game::update(int deltaTime)
 {
-	aspectRatio = glutGet(GLUT_WINDOW_WIDTH) / glutGet(GLUT_WINDOW_HEIGHT);
+	
 	
 	if (inMenu)
 	{
@@ -167,7 +167,8 @@ void Game::render()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	//scene->render();
 	//mainMenu.render();
-
+	aspectRatio = (float)glutGet(GLUT_WINDOW_WIDTH) / (float)glutGet(GLUT_WINDOW_HEIGHT);
+	//OutputDebugStringA( ("\n" +to_string(glutGet(GLUT_WINDOW_WIDTH)) +  " " + to_string(glutGet(GLUT_WINDOW_HEIGHT)) + " " + to_string(aspectRatio)).c_str() );
 	if (inMenu)
 	{
 		switch (menuScreen)

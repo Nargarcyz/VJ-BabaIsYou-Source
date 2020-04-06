@@ -46,7 +46,10 @@ void TileMap::moveEntity(glm::ivec2 src, glm::ivec2 dest) {
 	gridMap[src.x + gridMapSize.x * src.y] = NULL;
 }
 void TileMap::removeEntity(glm::ivec2 src) {
-	gridMap[src.x + gridMapSize.x * src.y] = NULL;
+	if (gridMap[src.x + gridMapSize.x * src.y] != NULL && gridMap[src.x + gridMapSize.x * src.y]->getEntityType() != MoveBlock)
+	{
+		gridMap[src.x + gridMapSize.x * src.y] = NULL;
+	}
 }
 
 Entity* TileMap::getEntity(glm::ivec2 testPosition, bool& success, bool& outOfBounds) {
@@ -253,12 +256,17 @@ void TileMap::prepareArrays(const glm::vec2& minCoords, ShaderProgram& program)
 		for (int i = 0; i < mapSize.x; i++)
 		{
 			tile = map[j * mapSize.x + i];
-			if (tile != 0 && tile != 1 && tile != 3)
+			//if (tile != 0)//&& tile != 1 && tile != 4)
 			{
 				// Non-empty tile
 				nTiles++;
 				posTile = glm::vec2(minCoords.x + i * tileSize, minCoords.y + j * tileSize);
-				texCoordTile[0] = glm::vec2(float((tile - 1) % 2) / tilesheetSize.x, float((tile - 1) / 2) / tilesheetSize.y);
+				if (tile == 1 || tile == 5 || tile == 4)
+				{
+					texCoordTile[0] = glm::vec2(float(0 % 2) / tilesheetSize.x, float(0 / 2) / tilesheetSize.y);
+				}else
+					texCoordTile[0] = glm::vec2(float((tile) % 3) / tilesheetSize.x, float((tile ) / 3) / tilesheetSize.y);
+
 				texCoordTile[1] = texCoordTile[0] + tileTexSize;
 				//texCoordTile[0] += halfTexel;
 				texCoordTile[1] -= halfTexel;

@@ -214,6 +214,10 @@ void Scene::checkRules() {
 		//map->addEntity(possessables[i]->getGridPos().x, possessables[i]->getGridPos().y, possessables[i]);
 		map->removeEntity(possessables[i]->getGridPos());
 	}
+	for (int i = 0; i < movables.size(); i++)
+	{
+		map->addEntity(movables[i]->getGridPos().x, movables[i]->getGridPos().y, movables[i]);
+	}
 	for (int i = 0; i < possessables.size(); i++)
 	{
 		((Player*)possessables[i])->setStop(false);
@@ -233,7 +237,7 @@ void Scene::checkRules() {
 	{
 		if (movables[i]->getWordType() == Object)
 		{
-			OutputDebugStringA(("\nFound a movable object at " +to_string(movables[i]->getGridPos().x) + "," + to_string(movables[i]->getGridPos().y)).c_str());
+			//Checking to the left of the entity
 			vector<Movable*> line = getMovableLine(movables[i]->getGridPos(), glm::vec2(1, 0));
 			if (!line.empty())
 			{
@@ -279,6 +283,55 @@ void Scene::checkRules() {
 
 
 
+				
+
+
+			}
+
+			//Checking down the entity
+			OutputDebugStringA("\nChecking down");
+			line = getMovableLine(movables[i]->getGridPos(), glm::vec2(0, 1));
+			if (!line.empty())
+			{
+
+				string lineInfo = "";
+				int separator = 0;
+				for (int i = 0; i < line.size(); i++)
+				{
+					switch (line[i]->getWordType())
+					{
+					case Object:
+						lineInfo += " " + (string)ObjectStrings[line[i]->getTypeIndex()];
+						break;
+					case Relation:
+						if (line[i]->getTypeIndex() == Relations::Is)
+						{
+							separator = i;
+						}
+						lineInfo += " " + (string)RelationStrings[line[i]->getTypeIndex()];
+						break;
+					case Property:
+						lineInfo += " " + (string)PropertyStrings[line[i]->getTypeIndex()];
+						break;
+					default:
+						break;
+					}
+				}
+				OutputDebugStringA("\nFound valid line:");
+				OutputDebugStringA(("\n" + lineInfo).c_str());
+
+
+				OutputDebugStringA("\n--Parsing objects:");
+				for (int object = 0; object < separator; object = object + 2)
+				{
+					OutputDebugStringA(("\n" + (string)ObjectStrings[line[object]->getTypeIndex()] + " will have attributes:").c_str());
+					for (int property = separator + 1; property < line.size(); property = property + 2)
+					{
+						OutputDebugStringA(("," + (string)PropertyStrings[line[property]->getTypeIndex()]).c_str());
+						OutputDebugStringA(("\n Inserting " + to_string((Objects)object) + "," + to_string((Properties)property)).c_str());
+						rulesToProcess.insert(make_pair((Objects)line[object]->getTypeIndex(), (Properties)line[property]->getTypeIndex()));
+					}
+				}
 			}
 		}
 	}
@@ -431,7 +484,7 @@ vector<Movable*> Scene::getMovableLine(glm::vec2 startPos, glm::vec2 direction)
 				}
 				else
 				{
-					OutputDebugStringA("\Property at right position");
+					OutputDebugStringA("\nProperty at right position");
 					valid = true;
 					mov.push_back((Movable*)ent);
 					partial = mov;
@@ -531,7 +584,7 @@ void Scene::init(const string levelFile)
 		wall->setPosition(glm::vec2(wallLocs[i].x, (wallLocs[i].y)), map->getTileSize());
 		//wall->setTileMap(map);
 		map->addEntity(wallLocs[i].x, wallLocs[i].y, (Entity*)wall);
-		wall->setCollision(true);
+		wall->setCollision(false);
 		
 		//OutputDebugStringA(("\n\t" + to_string(wall->getEntityType() == User)).c_str());
 
@@ -542,7 +595,7 @@ void Scene::init(const string levelFile)
 	}
 
 	vector<glm::ivec2> rockLocs;
-	map->getEntityLocations(rockLocs, 3);
+	map->getEntityLocations(rockLocs, 4);
 	for (int i = 0; i < rockLocs.size(); i++)
 	{
 		Player* rock = new Player(Rock_p);
@@ -600,6 +653,16 @@ void Scene::update(int deltaTime)
 		}
 	}
 
+	for (int i = 0; i < movables.size(); i++)
+	{
+		if (movables[i]->isMoving())
+		{
+			moving = true;
+			break;
+		}
+	}
+
+
 	if (noPossession)
 	{
 
@@ -609,7 +672,7 @@ void Scene::update(int deltaTime)
 			Game::instance().backgroundMusic = Game::instance().soundEngine->play2D(Game::instance().deadMusic, true, false, true);
 		}
 
-		if (Game::instance().getKey(13)) {
+		if (Game::instance().getKey(8)) {
 			Game::instance().changeActiveScene(-1);
 		}
 
@@ -633,6 +696,12 @@ void Scene::update(int deltaTime)
 			Game::instance().backgroundMusic = Game::instance().soundEngine->play2D(Game::instance().winMusic, false, false, true);
 		}
 		OutputDebugStringA("COMPLETED");
+
+		if (currentTime - completedTime > 3000)
+		{
+			Game::instance().changeActiveScene(-1);
+		}
+
 		if (Game::instance().getKey(13)) {
 			Game::instance().changeActiveScene(-1);
 		}
@@ -651,29 +720,10 @@ void Scene::update(int deltaTime)
 		return;
 	}
 	
-
-
-	if (Game::instance().getSpecialKey(1))
-	{
-		changePossession(PlayerType::Baba_p);
-	}
-	else if (Game::instance().getSpecialKey(2))
-	{
-		changePossession(PlayerType::Wall_p);
-	}
-	else if (Game::instance().getSpecialKey(3))
-	{
-		checkRules();
-	}
-	
 	glm::ivec2 movementDirection = glm::ivec2(0, 0);
 	if (!moving)
 	{
-		OutputDebugStringA("\nCAN MOVE");
-		if (needToRecheckRules)
-		{
-			checkRules();
-		}
+		
 		
 		if (Game::instance().getSpecialKey(GLUT_KEY_LEFT)) {
 			if (currentTime - clickedTime > 100) {
@@ -703,10 +753,22 @@ void Scene::update(int deltaTime)
 				clickedTime = currentTime;
 			}
 		}
+		else if (Game::instance().getKey(13)) {
+			if (currentTime - clickedTime > 100) {
+				checkRules();
+				clickedTime = currentTime;
+			}
+		}
+
+		if (needToRecheckRules)
+		{
+			checkRules();
+		}
 	}
 	
 	if (Game::instance().getKey(8)) {
-		Game::instance().changeActiveScene(0);
+		if (currentTime - clickedTime > 100) 
+			Game::instance().changeActiveScene(0);
 	}
 
 
@@ -806,7 +868,8 @@ void Scene::update(int deltaTime)
 		{
 			if (i != j && possessables[i]->getPlayerType() == possessables[j]->getPlayerType() && possessables[i]->getGridPos() == possessables[j]->getGridPos())
 			{
-				possessables.erase(possessables.begin() + j);
+				OutputDebugStringA("\n\tSAME POSITION");
+				//possessables.erase(possessables.begin() + j);
 			}
 		}
 	}
@@ -930,11 +993,13 @@ bool Scene::push(Entity* entity, glm::ivec2& direction)
 void Scene::levelCompleted()
 {
 	completed = true;
+	completedTime = currentTime;
 	Game::instance().levelCompletedEvent(this->levelId);
 }
 
 void Scene::renderLevelCompletedText() {
-	levelCompletedText.render("Level Complete!", glm::vec2(glutGet(GLUT_WINDOW_HEIGHT /2), glutGet( GLUT_WINDOW_WIDTH / 2)), 20, glm::vec4(1, 1, 1, 1));
+	string st = "Level Complete!";
+	levelCompletedText.render(st, glm::vec2((glutGet(GLUT_WINDOW_WIDTH) / 2)  - 200, glutGet(GLUT_WINDOW_HEIGHT) / 2), 50, glm::vec4(1, 1, 1, 1));
 }
 
 
@@ -947,7 +1012,8 @@ void Scene::render()
 	texProgram.setUniformMatrix4f("projection", projection);
 	texProgram.setUniform4f("color", 1.0f, 1.0f, 1.0f, 1.0f);
 	modelview = glm::mat4(1.0f);
-	modelview = glm::translate(modelview, glm::vec3(abs(glutGet(GLUT_WINDOW_WIDTH)-SCREEN_WIDTH)/2, abs(glutGet(GLUT_WINDOW_HEIGHT) - SCREEN_HEIGHT)/2,0));
+	//modelview = glm::scale(modelview, glm::vec3(Game::instance().aspectRatio, Game::instance().aspectRatio,1));
+	modelview = glm::translate(modelview, glm::vec3(abs(glutGet(GLUT_WINDOW_WIDTH)/2)-SCREEN_WIDTH/2, abs(glutGet(GLUT_WINDOW_HEIGHT)/2)-SCREEN_HEIGHT/2,0));
 	texProgram.setUniformMatrix4f("modelview", modelview);
 	texProgram.setUniform2f("texCoordDispl", 0.f, 0.f);
 	//yaga->render();
@@ -965,6 +1031,7 @@ void Scene::render()
 		movables[i]->render();
 	}
 
+	modelview = glm::mat4(1.0f);
 	if (completed)
 	{
 			renderLevelCompletedText();

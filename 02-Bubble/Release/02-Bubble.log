@@ -15,27 +15,30 @@ d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(155,20): warning C4018: 
 d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(192,20): warning C4018: '<': signed/unsigned mismatch
 d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(213,20): warning C4018: '<': signed/unsigned mismatch
 d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(217,20): warning C4018: '<': signed/unsigned mismatch
-d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(232,20): warning C4018: '<': signed/unsigned mismatch
-d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(243,23): warning C4018: '<': signed/unsigned mismatch
-d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(272,48): warning C4018: '<': signed/unsigned mismatch
-d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(228,12): warning C4101: 'rel': unreferenced local variable
-d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(434,25): warning C4129: 'P': unrecognized character escape sequence
-d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(526,20): warning C4018: '<': signed/unsigned mismatch
-d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(546,20): warning C4018: '<': signed/unsigned mismatch
-d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(594,20): warning C4018: '<': signed/unsigned mismatch
-d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(616,21): warning C4018: '<': signed/unsigned mismatch
-d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(621,21): warning C4018: '<': signed/unsigned mismatch
-d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(641,21): warning C4018: '<': signed/unsigned mismatch
-d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(646,21): warning C4018: '<': signed/unsigned mismatch
-d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(718,21): warning C4018: '<': signed/unsigned mismatch
-d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(774,21): warning C4018: '<': signed/unsigned mismatch
-d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(778,23): warning C4018: '<': signed/unsigned mismatch
-d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(796,20): warning C4018: '<': signed/unsigned mismatch
-d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(803,20): warning C4018: '<': signed/unsigned mismatch
-d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(805,21): warning C4018: '<': signed/unsigned mismatch
-d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(815,20): warning C4018: '<': signed/unsigned mismatch
-d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(958,20): warning C4018: '<': signed/unsigned mismatch
-d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(963,20): warning C4018: '<': signed/unsigned mismatch
+d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(221,20): warning C4018: '<': signed/unsigned mismatch
+d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(236,20): warning C4018: '<': signed/unsigned mismatch
+d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(247,23): warning C4018: '<': signed/unsigned mismatch
+d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(276,48): warning C4018: '<': signed/unsigned mismatch
+d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(299,23): warning C4018: '<': signed/unsigned mismatch
+d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(328,50): warning C4018: '<': signed/unsigned mismatch
+d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(232,12): warning C4101: 'rel': unreferenced local variable
+d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(579,20): warning C4018: '<': signed/unsigned mismatch
+d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(599,20): warning C4018: '<': signed/unsigned mismatch
+d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(647,20): warning C4018: '<': signed/unsigned mismatch
+d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(656,20): warning C4018: '<': signed/unsigned mismatch
+d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(679,21): warning C4018: '<': signed/unsigned mismatch
+d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(684,21): warning C4018: '<': signed/unsigned mismatch
+d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(710,21): warning C4018: '<': signed/unsigned mismatch
+d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(715,21): warning C4018: '<': signed/unsigned mismatch
+d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(780,21): warning C4018: '<': signed/unsigned mismatch
+d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(836,21): warning C4018: '<': signed/unsigned mismatch
+d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(840,23): warning C4018: '<': signed/unsigned mismatch
+d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(858,20): warning C4018: '<': signed/unsigned mismatch
+d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(865,20): warning C4018: '<': signed/unsigned mismatch
+d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(867,21): warning C4018: '<': signed/unsigned mismatch
+d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(878,20): warning C4018: '<': signed/unsigned mismatch
+d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(1024,20): warning C4018: '<': signed/unsigned mismatch
+d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(1029,20): warning C4018: '<': signed/unsigned mismatch
 d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(152): warning C4715: 'Scene::createInstances': not all control paths return a value
 LINK : warning LNK4075: ignoring '/INCREMENTAL' due to '/OPT:ICF' specification
 SOIL.lib(SOIL.obj) : warning LNK4075: ignoring '/EDITANDCONTINUE' due to '/OPT:ICF' specification

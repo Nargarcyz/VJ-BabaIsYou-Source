@@ -119,7 +119,7 @@ void drawSquare(double x1, double y1, double sidelength)
 void LevelSelection::render()
 {
 	glm::mat4 modelview;
-
+	glClearColor(21 / 255., 24 / 255., 31 / 255., 0);
 	texProgram.use();
 	
 	texProgram.setUniformMatrix4f("projection", projection);
