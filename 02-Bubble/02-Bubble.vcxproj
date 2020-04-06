@@ -47,6 +47,7 @@
     <ClCompile Include="TileMap.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <Text Include="level04.txt" />
     <Text Include="levels\level01.txt" />
     <Text Include="levels\level02.txt" />
     <Text Include="levels\level03.txt" />

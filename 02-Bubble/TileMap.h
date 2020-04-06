@@ -44,7 +44,10 @@ public:
 
 
 	int getTileSize() const { return tileSize; }
+	glm::vec2 getMapSize();
 	void getEntityLocations(vector<glm::ivec2>& wallLocs,int tilemapId);
+
+	int* extractMap();
 
 
 private:

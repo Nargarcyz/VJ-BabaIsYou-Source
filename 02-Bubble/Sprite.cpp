@@ -53,7 +53,8 @@ void Sprite::render() const
 {
 	glm::mat4 modelview = glm::mat4(1.0f);
 	modelview = glm::translate(glm::mat4(1.0f), glm::vec3(position.x, position.y, 0.f));
-	modelview = glm::translate(modelview, glm::vec3(abs(glutGet(GLUT_WINDOW_WIDTH) - SCREEN_WIDTH) / 2, abs(glutGet(GLUT_WINDOW_HEIGHT) - SCREEN_HEIGHT) / 2, 0));
+	//modelview = glm::translate(modelview, glm::vec3(abs(glutGet(GLUT_WINDOW_WIDTH) - SCREEN_WIDTH) / 2, abs(glutGet(GLUT_WINDOW_HEIGHT) - SCREEN_HEIGHT) / 2, 0));
+	modelview = glm::translate(modelview, glm::vec3(abs(glutGet(GLUT_WINDOW_WIDTH) / 2) - SCREEN_WIDTH / 2, abs(glutGet(GLUT_WINDOW_HEIGHT) / 2) - SCREEN_HEIGHT / 2, 0));
 	/*modelview = glm::scale(modelview, glm::vec3(Game::instance().aspectRatio, Game::instance().aspectRatio, 1));*/
 	shaderProgram->setUniformMatrix4f("modelview", modelview);
 	shaderProgram->setUniform2f("texCoordDispl", texCoordDispl.x, texCoordDispl.y);

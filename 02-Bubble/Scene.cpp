@@ -81,7 +81,7 @@ bool Scene::createInstances(const string& levelFile)
 				{
 					index = std::distance(std::begin(ObjectStrings), it);
 				}
-				OutputDebugStringA(("\n" + type + " " +  ObjectStrings[index] + " at " + to_string(pos.x) + " " + to_string(pos.y)).c_str());
+				//OutputDebugStringA(("\n" + type + " " +  ObjectStrings[index] + " at " + to_string(pos.x) + " " + to_string(pos.y)).c_str());
 					
 			}
 			else if (type == "Relation")
@@ -92,7 +92,7 @@ bool Scene::createInstances(const string& levelFile)
 				{
 					index = std::distance(std::begin(RelationStrings), it);
 				}
-				OutputDebugStringA(("\n" + type + " " + RelationStrings[index] + " at " + to_string(pos.x) + " " + to_string(pos.y)).c_str());
+				//OutputDebugStringA(("\n" + type + " " + RelationStrings[index] + " at " + to_string(pos.x) + " " + to_string(pos.y)).c_str());
 			}
 			else if (type == "Property")
 			{
@@ -102,7 +102,7 @@ bool Scene::createInstances(const string& levelFile)
 				{
 					index = std::distance(std::begin(PropertyStrings),it);
 				}
-				OutputDebugStringA(("\n" + type + " " + PropertyStrings[index] + " at " + to_string(pos.x) + " " + to_string(pos.y)).c_str());
+				//OutputDebugStringA(("\n" + type + " " + PropertyStrings[index] + " at " + to_string(pos.x) + " " + to_string(pos.y)).c_str());
 			}
 
 			Movable* mov = new Movable((Words)iType, index);
@@ -120,9 +120,9 @@ bool Scene::createInstances(const string& levelFile)
 			int type;
 			userString.str(line);
 			userString >> name >> pos.x >> pos.y;
-			OutputDebugStringA(("\n" + name).c_str());
+			/*OutputDebugStringA(("\n" + name).c_str());
 			OutputDebugStringA(("\n" + to_string(pos.x)).c_str());
-			OutputDebugStringA(("\n" + to_string(pos.y)).c_str());
+			OutputDebugStringA(("\n" + to_string(pos.y)).c_str());*/
 			if (name == "Baba")
 			{
 				Player* pl = new Player(Baba_p);
@@ -149,6 +149,66 @@ bool Scene::createInstances(const string& levelFile)
 
 
 
+}
+
+void Scene::extractEntities(){
+	int* tilemap = map->extractMap();
+	glm::vec2 mapSize = map->getMapSize();
+	for (int j = 0; j < mapSize.y; j++)
+	{
+		for (int i = 0; i < mapSize.x; i++)
+		{
+			int tile = tilemap[j * (int)mapSize.x + i];
+			switch (tile)
+			{
+			case 2:
+			case 3:
+			case 4:
+			case 5: {
+				Player* ent = new Player(static_cast<PlayerType>(tile - 1));
+				ent->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, glm::ivec2(24, 24));
+				ent->setPosition(glm::vec2(i, j), map->getTileSize());
+				map->addEntity(i, j, (Entity*)ent);
+				ent->setCollision(true);
+				if (static_cast<PlayerType>(tile - 1) == Baba_p)
+				{
+					possessables.insert(possessables.begin(), ent);
+				}else
+					possessables.push_back(ent);
+				break;
+			}
+				
+			default:
+				if (tile != 0 && tile != 1 && tile != 7 && tile != 18 && tile != 19)
+				{
+					int iType, index;
+					switch (tile/4)
+					{
+					case 2:
+						iType = Property;
+						break;
+					case 3:
+						iType = Object;
+						break;
+					case 4:
+						iType = Relation;
+						break;
+					default:
+						break;
+					}
+					index = (tile % 4) + 1;
+					Movable* mov = new Movable((Words)iType, index);
+					mov->init(glm::ivec2(0, 0), texProgram, glm::ivec2(24, 24));
+					mov->setPosition(glm::vec2(i,j), map->getTileSize());
+					map->addEntity(i, j, (Entity*)mov);
+					movables.push_back(mov);
+				}
+				
+				break;
+			}
+			
+		}
+	}
 }
 void Scene::applyRule(Objects obj, Properties prop)
 {
@@ -520,7 +580,8 @@ void Scene::init(const string levelFile)
 		cout << "Could not load font!!!" << endl;
 
 	map = TileMap::createTileMap(levelFile, glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
-	createInstances(levelFile);
+	//createInstances(levelFile);
+	extractEntities();
 	
 	
 
@@ -533,86 +594,42 @@ void Scene::init(const string levelFile)
 	bool success, outOfBounds = false;
 	string msg;
 	Player* e = (Player*)map->getEntity(glm::ivec2(INIT_PLAYER_X_TILES, INIT_PLAYER_Y_TILES), success, outOfBounds);
-	/*if (success)
-	{
-		msg = "Player Type Added: " + to_string(e->getPlayerType()) + "\n";
-		OutputDebugStringA(msg.c_str());
-	}*/
 
-	/*Movable* mov = new Movable(Words::Relation,Relations::Is);
-	mov->init(glm::ivec2(0, 0), texProgram, glm::ivec2(24, 24));
-	mov->setPosition(glm::vec2(10,10), map->getTileSize());
-	map->addEntity(10,10, (Entity*)mov);
-	movables.push_back(mov);
 
-	mov = new Movable(Words::Object, Objects::Baba);
-	mov->init(glm::ivec2(0, 0), texProgram, glm::ivec2(24, 24));
-	mov->setPosition(glm::vec2(9, 10), map->getTileSize());
-	map->addEntity(9, 10, (Entity*)mov);
-	movables.push_back(mov);
 
-	mov = new Movable(Words::Property, Properties::You);
-	mov->init(glm::ivec2(0, 0), texProgram, glm::ivec2(24, 24));
-	mov->setPosition(glm::vec2(11, 10), map->getTileSize());
-	map->addEntity(11, 10, (Entity*)mov);
-	movables.push_back(mov);*/
 
-	/*yaga = new Player();
-	yaga->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, glm::ivec2(24, 24));
-	yaga->setPosition(glm::vec2((INIT_PLAYER_X_TILES-1) * map->getTileSize(), INIT_PLAYER_Y_TILES * map->getTileSize()));
-	yaga->setTileMap(map);*/
-	
-	//for (int i = 0; i < 10; i++)
+	//vector<glm::ivec2> wallLocs;
+	//map->getEntityLocations(wallLocs,1);
+	//for (int i = 0; i < wallLocs.size(); i++)
 	//{
-	//	Player* p = new Player();
-	//	p->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, glm::ivec2(24, 24));
-	//	p->setPosition(glm::vec2((INIT_PLAYER_X_TILES - i) * map->getTileSize(), INIT_PLAYER_Y_TILES * map->getTileSize()));
-	//	p->setTileMap(map);
-	//	walls.push_back(*p);
+	//	Player* wall = new Player(Wall_p);
+	//	wall->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, glm::ivec2(24, 24));
+	//	wall->setPosition(glm::vec2(wallLocs[i].x, (wallLocs[i].y)), map->getTileSize());
+	//	map->addEntity(wallLocs[i].x, wallLocs[i].y, (Entity*)wall);
+	//	wall->setCollision(false);
+	//	
+
+
+	//	possessables.push_back(wall);
+
 	//}
 
+	//vector<glm::ivec2> rockLocs;
+	//map->getEntityLocations(rockLocs, 4);
+	//for (int i = 0; i < rockLocs.size(); i++)
+	//{
+	//	Player* rock = new Player(Rock_p);
+	//	rock->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, glm::ivec2(24, 24));
+	//	rock->setPosition(glm::vec2(rockLocs[i].x, (rockLocs[i].y)), map->getTileSize());
+	//	//wall->setTileMap(map);
+	//	map->addEntity(rockLocs[i].x, rockLocs[i].y, (Entity*)rock);
+	//	rock->setCollision(true);
 
 
 
-	vector<glm::ivec2> wallLocs;
-	map->getEntityLocations(wallLocs,1);
-	for (int i = 0; i < wallLocs.size(); i++)
-	{
-		Player* wall = new Player(Wall_p);
-		//wall->changePlayerType(PlayerType::Wall);
-		wall->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, glm::ivec2(24, 24));
-		wall->setPosition(glm::vec2(wallLocs[i].x, (wallLocs[i].y)), map->getTileSize());
-		//wall->setTileMap(map);
-		map->addEntity(wallLocs[i].x, wallLocs[i].y, (Entity*)wall);
-		wall->setCollision(false);
-		
-		//OutputDebugStringA(("\n\t" + to_string(wall->getEntityType() == User)).c_str());
+	//	possessables.push_back(rock);
 
-
-		//walls.push_back(wall);
-		possessables.push_back(wall);
-
-	}
-
-	vector<glm::ivec2> rockLocs;
-	map->getEntityLocations(rockLocs, 4);
-	for (int i = 0; i < rockLocs.size(); i++)
-	{
-		Player* rock = new Player(Rock_p);
-		//wall->changePlayerType(PlayerType::Wall);
-		rock->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, glm::ivec2(24, 24));
-		rock->setPosition(glm::vec2(rockLocs[i].x, (rockLocs[i].y)), map->getTileSize());
-		//wall->setTileMap(map);
-		map->addEntity(rockLocs[i].x, rockLocs[i].y, (Entity*)rock);
-		rock->setCollision(true);
-
-		//OutputDebugStringA(("\n\t" + to_string(wall->getEntityType() == User)).c_str());
-
-
-		//walls.push_back(wall);
-		possessables.push_back(rock);
-
-	}
+	//}
 
 
 
@@ -768,7 +785,7 @@ void Scene::update(int deltaTime)
 	
 	if (Game::instance().getKey(8)) {
 		if (currentTime - clickedTime > 100) 
-			Game::instance().changeActiveScene(0);
+			Game::instance().changeActiveScene(-1);
 	}
 
 

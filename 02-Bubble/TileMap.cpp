@@ -146,16 +146,36 @@ bool TileMap::loadLevel(const string& levelFile)
 		for (int i = 0; i < mapSize.x; i++)
 		{
 
+			string number = "";
 			fin.get(tile);
-			if (tile == ' ')
+			while (tile != *",")
+			{
+				number += tile;
+				fin.get(tile);
+			}
+			
+			if (std::stoi(number) == ' ' || std::stoi(number) == 0)
 				map[j * mapSize.x + i] = 0;
 			else
-				map[j * mapSize.x + i] = tile - int('0');
+				//map[j * mapSize.x + i] = tile - int('0');
+				map[j * mapSize.x + i] = std::stoi(number);
+			//fin.get(tile);
 		}
-		fin.get(tile);
+		//fin.get(tile);
 #ifndef _WIN32
 		fin.get(tile);
 #endif
+	}
+
+	OutputDebugStringA("\nObtained map:");
+	for (int j = 0; j < mapSize.y; j++)
+	{
+		for (int i = 0; i < mapSize.x; i++)
+		{
+			OutputDebugStringA( (to_string(map[j * mapSize.x + i])+" ").c_str() );
+		}
+		OutputDebugStringA("\n");
+		
 	}
 
 
@@ -192,7 +212,6 @@ bool TileMap::loadLevel(const string& levelFile)
 
 void TileMap::render() const
 {
-	//glClearColor(0.03, 0.03, 0.03, 0);
 	glClearColor(0.141176470588235, 0.172549019607843, 0.278431372549020, 0.0);
 
 	glEnable(GL_TEXTURE_2D);
@@ -202,46 +221,6 @@ void TileMap::render() const
 	glEnableVertexAttribArray(texCoordLocation);
 	glDrawArrays(GL_TRIANGLES, 0, 6 * mapSize.x * mapSize.y);
 	glDisable(GL_TEXTURE_2D);
-
-	/*for (int i = 0; i < gridMapSize.x; i++)
-	{
-		for (int j = 0; j < gridMapSize.y; j++) {
-			if (gridMap[j * gridMapSize.x + i] == NULL)
-			{
-				glPointSize(5.0f);
-				glColor3f(255, 0, 0);
-				glBegin(GL_POINTS);
-				glVertex3f(i * tileSize + tileSize / 2, j * tileSize + tileSize / 2, 0.f);
-				glEnd();
-			}
-
-		}
-	}*/
-
-	/*for (int i = 0; i < floor(glutGet(GLUT_WINDOW_WIDTH) / tileSize) * floor(glutGet(GLUT_WINDOW_HEIGHT) / tileSize); i++)
-	{
-		if (gridMap[i] != NULL)
-		{
-			glClearColor(1.0, 1.0, 1.0, 0.0);
-			glColor3f(1, 0, 0);
-			glPointSize(5.0f);
-			glBegin(GL_POINTS);
-			glVertex3f(gridMap[i]->getGridPos().x*tileSize, gridMap[i]->getGridPos().y* tileSize, 0.f);
-
-			if (gridMap[i]->getEntityType() == EntityType::User && ((Player*)gridMap[i])->getPlayerType() == PlayerType::Baba_p)
-			{
-				OutputDebugStringA("\nEntity detected at");
-				OutputDebugStringA(to_string(gridMap[i]->getGridPos().x).c_str());
-				OutputDebugStringA(",");
-				OutputDebugStringA(to_string(gridMap[i]->getGridPos().y).c_str());
-				OutputDebugStringA("\n");
-			}
-
-			glEnd();
-		}
-	}*/
-
-
 }
 
 void TileMap::prepareArrays(const glm::vec2& minCoords, ShaderProgram& program)
@@ -261,11 +240,11 @@ void TileMap::prepareArrays(const glm::vec2& minCoords, ShaderProgram& program)
 				// Non-empty tile
 				nTiles++;
 				posTile = glm::vec2(minCoords.x + i * tileSize, minCoords.y + j * tileSize);
-				if (tile == 1 || tile == 5 || tile == 4)
+				if (tile == 0 || tile == 1)
 				{
-					texCoordTile[0] = glm::vec2(float(0 % 2) / tilesheetSize.x, float(0 / 2) / tilesheetSize.y);
-				}else
 					texCoordTile[0] = glm::vec2(float((tile) % 3) / tilesheetSize.x, float((tile ) / 3) / tilesheetSize.y);
+				}else
+					texCoordTile[0] = glm::vec2(float(0 % 2) / tilesheetSize.x, float(0 / 2) / tilesheetSize.y);
 
 				texCoordTile[1] = texCoordTile[0] + tileTexSize;
 				//texCoordTile[0] += halfTexel;
@@ -301,6 +280,11 @@ void TileMap::prepareArrays(const glm::vec2& minCoords, ShaderProgram& program)
 // Method collisionMoveDown also corrects Y coordinate if the box is
 // already intersecting a tile below.
 
+glm::vec2 TileMap::getMapSize()
+{
+	return mapSize;
+}
+
 void TileMap::getEntityLocations(vector<glm::ivec2>& wallLocs, int tilemapId)
 {
 	for (int j = 0; j < mapSize.y; j++)
@@ -312,6 +296,10 @@ void TileMap::getEntityLocations(vector<glm::ivec2>& wallLocs, int tilemapId)
 			}
 		}
 	}
+}
+
+int* TileMap::extractMap() {
+	return map;
 }
 
 
