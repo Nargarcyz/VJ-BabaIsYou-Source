@@ -34,9 +34,8 @@ void Game::init()
 	unlockedLevels = vector<bool>(5, 1);
 	unlockedLevels[0] = 1;
 
-	//glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
 	glClearColor(3.1f / 255, 3.1f / 255, 3.1f / 255, 0);
-	//glClearColor(0,0,0,0);
+
 	
 	mainMenu.init();
 	levelSelection.init();
@@ -75,13 +74,6 @@ void Game::changeActiveScene(int sceneId)
 	case 0:
 		inMenu = true;
 		menuScreen = 0;
-		/*if (backgroundMusic)
-		{
-			backgroundMusic->stop();
-			backgroundMusic->drop();
-		}
-		backgroundMusic = soundEngine->play2D(menuMusic,true,false,true);
-		backgroundMusic->setVolume(0.5f);*/
 
 		if (backgroundMusic->getSoundSource() != menuMusic)
 		{
@@ -89,8 +81,6 @@ void Game::changeActiveScene(int sceneId)
 			backgroundMusic = soundEngine->play2D(menuMusic, true, false, true);
 		}
 
-		/*if (scene != NULL)
-			delete scene;*/
 		break;
 	case -1:
 		inMenu = true;
@@ -113,11 +103,6 @@ void Game::changeActiveScene(int sceneId)
 
 	default:
 		inMenu = false;
-		/*if (backgroundMusic)
-		{
-			backgroundMusic->stop();
-			backgroundMusic->drop();
-		}*/
 		menuScreen = 0;
 		
 		scene = new Scene(sceneId);
@@ -130,8 +115,6 @@ void Game::changeActiveScene(int sceneId)
 			backgroundMusic = soundEngine->play2D(levelMusic, true, false, true);
 		}
 
-		/*backgroundMusic = soundEngine->play2D(levelMusic, true, false, true);
-		backgroundMusic->setVolume(0.5f);*/
 		break;
 	}
 }
@@ -170,10 +153,7 @@ bool Game::update(int deltaTime)
 void Game::render()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	//scene->render();
-	//mainMenu.render();
 	aspectRatio = (float)glutGet(GLUT_WINDOW_WIDTH) / (float)glutGet(GLUT_WINDOW_HEIGHT);
-	//OutputDebugStringA( ("\n" +to_string(glutGet(GLUT_WINDOW_WIDTH)) +  " " + to_string(glutGet(GLUT_WINDOW_HEIGHT)) + " " + to_string(aspectRatio)).c_str() );
 	if (inMenu)
 	{
 		switch (menuScreen)

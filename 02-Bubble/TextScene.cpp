@@ -20,7 +20,6 @@ void TextScene::init() {
 	Game::instance().backgroundMusic = Game::instance().soundEngine->play2D(Game::instance().menuMusic,true,false,true);
 	Game::instance().backgroundMusic->setVolume(0.5f);
 	
-	//Text titleText;
 	if (!titleText.init("fonts/OpenSans-Regular.ttf"))
 		cout << "Could not load font!!!" << endl;
 	if (!levelSelectText.init("fonts/OpenSans-Regular.ttf"))
@@ -85,8 +84,6 @@ void TextScene::update(int deltaTime) {
 			clickedTime = currentTime;
 		}
 	}
-	/*if (selection > 2) selection = 2;
-	if (selection < 0) selection = 0;*/
 	selection = (selection >= 0) ? selection % 3 : 3 - 1;
 	if (clickedTime == currentTime) Game::instance().soundEngine->play2D("sounds/menuSound.ogg");
 
@@ -104,7 +101,6 @@ void TextScene::update(int deltaTime) {
 
 		break;
 	case 1:
-		//lerpSize(titleTextSize, selectedTextSize, titleTextFraction, deltaTime);
 		lerpSize(helpTextSize, defaultTextSize, selectedTextSize, helpTextFraction, deltaTime);
 
 		lerpSize(titleTextSize, selectedTextSize, defaultTextSize, titleTextFraction, deltaTime);
@@ -114,7 +110,6 @@ void TextScene::update(int deltaTime) {
 
 		break;
 	case 2:
-		//lerpSize(titleTextSize, selectedTextSize, titleTextFraction, deltaTime);
 		lerpSize(quitTextSize, defaultTextSize, selectedTextSize, quitTextFraction, deltaTime);
 
 		lerpSize(titleTextSize, selectedTextSize, defaultTextSize, titleTextFraction, deltaTime);
@@ -128,7 +123,6 @@ void TextScene::update(int deltaTime) {
 
 
 	OutputDebugStringA(to_string(selection).c_str());
-	//OutputDebugStringA(to_string(currentTime).c_str());
 	OutputDebugStringA("\n");
 
 }
@@ -164,13 +158,9 @@ void TextScene::render()
 	glm::mat4 modelview;
 
 	glClearColor(21/255., 24/255., 31/255., 0);
-	//glClearColor(0.03, 0.03, 0.03,0);
 	texProgram.use();
 	texProgram.setUniformMatrix4f("projection", projection);
 	texProgram.setUniform4f("color", 1.0f, 1.0f, 1.0f, 1.0f);
-	/*modelview = glm::mat4(1.0f);
-	texProgram.setUniformMatrix4f("modelview", modelview);
-	texProgram.setUniform2f("texCoordDispl", 0.f, 0.f);*/
 	int separation = 10;
 	glm::vec2 prevPos = glm::vec2(0, glutGet(GLUT_WINDOW_HEIGHT) / 4);
 	titleText.render("BABA IS YOU CLONE", prevPos, titleTextSize, glm::vec4(1, 1, 1, 1));

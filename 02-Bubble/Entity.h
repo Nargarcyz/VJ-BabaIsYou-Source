@@ -32,7 +32,6 @@ public:
 
 	void move(glm::ivec2 increment);
 	void update(int deltaTime);
-	bool hasCollision();
 	bool isMoving();
 	void setCollision(bool collision);
 	void setStop(bool stop);

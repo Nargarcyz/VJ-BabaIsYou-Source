@@ -33,7 +33,7 @@ Scene::~Scene()
 }
 
 
-
+//Deprecated. Used to extract entity data from individual lines in the level file from line 30 onwards.
 bool Scene::createInstances(const string& levelFile)
 {
 	string line, type;
@@ -151,6 +151,7 @@ bool Scene::createInstances(const string& levelFile)
 
 }
 
+//Gets entity locations directly from the tilemap and creates the instances as required
 void Scene::extractEntities(){
 	int* tilemap = map->extractMap();
 	glm::vec2 mapSize = map->getMapSize();
@@ -215,6 +216,8 @@ void Scene::extractEntities(){
 		}
 	}
 }
+
+//Given an object and a property, applies the "Is" relation
 void Scene::applyRule(Objects obj, Properties prop)
 {
 	for (int i = 0; i < possessables.size(); i++)
@@ -224,11 +227,8 @@ void Scene::applyRule(Objects obj, Properties prop)
 			switch (prop)
 			{
 			case You:
-				//changePossession((PlayerType)obj);
 				possessables[i]->setPossessed(true);
-				//noPossession = false;
 				map->removeEntity(possessables[i]->getGridPos());
-
 				break;
 			case Stop:
 				possessables[i]->setCollision(true);
@@ -258,30 +258,10 @@ void Scene::applyRule(Objects obj, Properties prop)
 }
 
 
-void Scene::changePossession(PlayerType newPlayer) {
-	for (int i = 0; i < possessables.size(); i++)
-	{
-		if (newPlayer == NoPl)
-		{
-			possessables[i]->setPossessed(false);
-
-		}
-		else if (possessables[i]->getPlayerType() == newPlayer)
-		{
-			OutputDebugStringA("\nFound an entity to possess");
-			possessables[i]->setPossessed(true);
-			map->removeEntity(possessables[i]->getGridPos());
-		}
-		else {
-			possessables[i]->setPossessed(false);
-			map->addEntity(possessables[i]->getGridPos().x, possessables[i]->getGridPos().y, possessables[i]);
-		}
-	}
-}
-
+// For each movable object in the scene, gets the adjacent movable entities to the left and directly downwards, and if they
+// are parseable lines, rules get created and applied.
 void Scene::checkRules() {
 	for (int i = 0; i < possessables.size(); i++) {
-		//map->addEntity(possessables[i]->getGridPos().x, possessables[i]->getGridPos().y, possessables[i]);
 		map->removeEntity(possessables[i]->getGridPos());
 	}
 	for (int i = 0; i < movables.size(); i++)
@@ -295,8 +275,6 @@ void Scene::checkRules() {
 		((Player*)possessables[i])->setPushable(false);
 		((Player*)possessables[i])->setSink(false);
 		possessables[i]->setPossessed(false);
-		//noPossession = true;
-		//changePossession(NoPl);
 	}
 
 	set< pair<Objects, Properties> > rulesToProcess;
@@ -419,45 +397,9 @@ void Scene::checkRules() {
 	}
 
 	needToRecheckRules = false;
-
-	/*for (int i = 0; i < movables.size(); i++)
-	{
-		if (movables[i]->getWordType() == Object)
-		{
-
-			while (true)
-			{
-
-			}
-
-
-
-
-
-			glm::vec2 position = movables[i]->getGridPos();
-			bool success = false;
-			bool outOfBounds = false;
-			Entity* ent = map->getEntity(position + glm::vec2(1, 0), success, outOfBounds);
-			
-			if (success && !outOfBounds && ent->getEntityType() == MoveBlock && ((Movable*)ent)->getWordType() == Relation)
-			{
-				success = false;
-				outOfBounds = false;
-				ent = map->getEntity(position + glm::vec2(2, 0), success, outOfBounds);
-				if (success && !outOfBounds && ent->getEntityType() == MoveBlock && ((Movable*)ent)->getWordType() == Property)
-				{
-
-				}
-			}
-		}
-	}*/
-
-	/*for (int i = 0; i < toProcess.size(); i++)
-	{
-		applyRule(toProcess[i].first, rel, toProcess[i].second);
-	}*/
 }
 
+// Returns a valid rule line from a start position in a certain direction. Can return empty in case no valid rule is found.
 vector<Movable*> Scene::getMovableLine(glm::vec2 startPos, glm::vec2 direction)
 {
 	
@@ -593,69 +535,10 @@ void Scene::init(const string levelFile)
 	map = TileMap::createTileMap(levelFile, glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
 	//createInstances(levelFile);
 	extractEntities();
-	
-	
 
-	/*baba = new Player(Baba_p);
-	baba->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, glm::ivec2(24, 24));
-	baba->setPosition(glm::vec2(INIT_PLAYER_X_TILES, INIT_PLAYER_Y_TILES), map->getTileSize());
-	map->addEntity(INIT_PLAYER_X_TILES, INIT_PLAYER_Y_TILES, (Entity*)baba);*/
-	
-
-	bool success, outOfBounds = false;
-	string msg;
-	Player* e = (Player*)map->getEntity(glm::ivec2(INIT_PLAYER_X_TILES, INIT_PLAYER_Y_TILES), success, outOfBounds);
-
-
-
-
-	//vector<glm::ivec2> wallLocs;
-	//map->getEntityLocations(wallLocs,1);
-	//for (int i = 0; i < wallLocs.size(); i++)
-	//{
-	//	Player* wall = new Player(Wall_p);
-	//	wall->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, glm::ivec2(24, 24));
-	//	wall->setPosition(glm::vec2(wallLocs[i].x, (wallLocs[i].y)), map->getTileSize());
-	//	map->addEntity(wallLocs[i].x, wallLocs[i].y, (Entity*)wall);
-	//	wall->setCollision(false);
-	//	
-
-
-	//	possessables.push_back(wall);
-
-	//}
-
-	//vector<glm::ivec2> rockLocs;
-	//map->getEntityLocations(rockLocs, 4);
-	//for (int i = 0; i < rockLocs.size(); i++)
-	//{
-	//	Player* rock = new Player(Rock_p);
-	//	rock->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, glm::ivec2(24, 24));
-	//	rock->setPosition(glm::vec2(rockLocs[i].x, (rockLocs[i].y)), map->getTileSize());
-	//	//wall->setTileMap(map);
-	//	map->addEntity(rockLocs[i].x, rockLocs[i].y, (Entity*)rock);
-	//	rock->setCollision(true);
-
-
-
-	//	possessables.push_back(rock);
-
-	//}
-
-
-
-
-	//possessed = baba;
-
-	/*interactable = new Interactable();
-	interactable->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, glm::ivec2(24, 24));
-	interactable->setPosition(glm::vec2(3 * map->getTileSize(), 13 * map->getTileSize()));
-	interactable->setTileMap(map);*/
-
-	//changePossession(Baba_p);
+	// Reverses the possessables vector in an attempt to ensure that baba gets rendered on top of anything else
 	std::reverse(possessables.begin(), possessables.end());
 	checkRules();
-	//projection = glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT - 1), 0.f);
 	
 	currentTime = 0.0f;
 	clickedTime = currentTime;
@@ -668,11 +551,14 @@ void Scene::init(const string levelFile)
 void Scene::update(int deltaTime)
 {
 	currentTime += deltaTime;
-	//possessed->update(deltaTime);
 
 	bool moving = false;
 	bool move = false;
 	noPossession = true;
+
+	// UPDATE PHASE: Updates certain information based on the new game state, such as:
+	// - Checking if there is any possessable or movable entity moving, in order to halt updates that may break gameplay
+	// - Checking if there is any possessed entity in case of a rule change or an gameplay event, while also erasing the entities that need to be destroyed.
 	for (int i = 0; i < possessables.size(); i++)
 	{
 		if (possessables[i]->isMoving())
@@ -694,6 +580,8 @@ void Scene::update(int deltaTime)
 			break;
 		}
 	}
+
+	// Destroys entities that have been marked for destruction due to ingame events
 	for (int i = 0; i < possessables.size(); i++)
 	{
 		if (possessables[i]->isDestroyed)
@@ -705,32 +593,34 @@ void Scene::update(int deltaTime)
 	}
 
 
-	//Remove entities in the same place
+	// Removes entities that overlap in the same tile location
 	for (int i = 0; i < possessables.size(); i++)
 	{
 		for (int j = 0; j < possessables.size(); j++)
 		{
 			if (i != j && possessables[i]->getPlayerType() == possessables[j]->getPlayerType() && possessables[i]->getGridPos() == possessables[j]->getGridPos())
 			{
-				//OutputDebugStringA("\n\tSAME POSITION");
 				possessables.erase(possessables.begin() + j);
 			}
 		}
 	}
 
-
+	// Also destroys movable entities that have been marked for destruction
 	for (int i = 0; i < movables.size(); i++)
 	{
-		if (possessables[i]->isDestroyed)
+		if (movables[i]->isDestroyed)
 		{
-			possessables.erase(possessables.begin() + i);
+			movables.erase(movables.begin() + i);
 		}
 		else
 			movables[i]->update(deltaTime);
 	}
+
+	// If any entity is moving, don't process further to ensure stability
 	if (moving) return;
 
-
+	// LEVEL FAILED: This conditional ensures that the level reaches a failed state, by disabling user interaction of the level
+	// and playing the fail music
 	if (noPossession)
 	{
 
@@ -746,6 +636,8 @@ void Scene::update(int deltaTime)
 		return;
 	}
 
+	// LEVEL COMPLETED: This conditional ensures that the level reaches a win state, by disabling user interaction of the level
+	// and playing the win music, as well as unlocking the next level
 	if (!moving && completed)
 	{
 		if (Game::instance().backgroundMusic->getSoundSource() != Game::instance().winMusic)
@@ -766,7 +658,8 @@ void Scene::update(int deltaTime)
 
 		return;
 	}
-	
+
+	// GAMEPLAY UPDATE: This section processes user input and changes entity states as required
 	glm::ivec2 movementDirection = glm::ivec2(0, 0);
 	if (!moving)
 	{
@@ -800,12 +693,6 @@ void Scene::update(int deltaTime)
 				clickedTime = currentTime;
 			}
 		}
-		else if (Game::instance().getKey(13)) {
-			if (currentTime - clickedTime > 100) {
-				checkRules();
-				clickedTime = currentTime;
-			}
-		}
 
 		if (needToRecheckRules)
 		{
@@ -813,13 +700,14 @@ void Scene::update(int deltaTime)
 		}
 	}
 	
+	// Return to level select key
 	if (Game::instance().getKey(8)) {
 		if (currentTime - clickedTime > 100) 
 			Game::instance().changeActiveScene(-1);
 	}
 
 
-
+	// ACTUAL GAMEPLAY UPDATE: If an user input was recieved, process it
 	glm::ivec2 testPosition = movementDirection;
 	if (move)
 	{
@@ -834,48 +722,44 @@ void Scene::update(int deltaTime)
 				else {
 					ind = possessables.size() - 1 - i;
 				}
-				//walls[i].update(deltaTime);
 
-			//if (possessables[ind]->getPlayerType() == possessed)
+			// If the possessable is possessed and not moving, it can be updated
 			if (possessables[ind]->isPossessed())
 			{
-				OutputDebugStringA("\nPos");
 				if (!(possessables[ind]->isMoving()))
 				{
+
+					// We check for an entity presence in the grid position
 					testPosition = movementDirection + possessables[ind]->getGridPos();
 					bool success, outOfBounds;
 					Entity* e;
 					e = map->getEntity(testPosition, success, outOfBounds);
 
-					//TODO REWORK PUSH
-
-
+					// If the position is out of bounds, ignore the input for this possessable
 					if (outOfBounds)
 					{
 						continue;
 					}
+					// If the position is not out of bounds and a non null entity was found, proceed
 					else if (success && e != NULL)
 					{
-						OutputDebugStringA("\nCollision\n");
-						//OutputDebugStringA(to_string(e->getEntityType()).c_str());
 						if (e->getEntityType() == MoveBlock || e->getEntityType() == User)
 						{
-							OutputDebugStringA("\n\tPUSHING\n");
-							//push(e, movementDirection);
 							push(possessables[ind], movementDirection);
 						}
 
 					}
+					// If nothing was found, just move the possessable
 					else {
 						possessables[ind]->move(movementDirection);
 						map->moveEntity(possessables[ind]->getGridPos(), testPosition);
-						//baba->setGridPos(testPosition);
 					}
 
 				}
 			}
 			
 		}
+
 
 		vector<Entity*> allEntities(possessables.begin(), possessables.end());
 		allEntities.insert(allEntities.end(), movables.begin(), movables.end());
@@ -912,35 +796,18 @@ void Scene::update(int deltaTime)
 	
 }
 
-//TODO: Fix increment not updating on next movement
-
+// Function that, given an entity and a direction, tries to push it, checking for collisions, on that direction.
 bool Scene::push(Entity* entity, glm::ivec2& direction)
 {	
 	bool success, outOfBounds;
 	Entity* e = map->getEntity(entity->getGridPos()+ direction, success, outOfBounds);
-	OutputDebugStringA("\nEntity Position: ");
-	OutputDebugStringA(to_string(entity->getGridPos().x).c_str());
-	OutputDebugStringA(" ");
-	OutputDebugStringA(to_string(entity->getGridPos().y).c_str());
-
-	OutputDebugStringA("\nSuccess: ");
-	OutputDebugStringA(to_string(success).c_str());
-
-	OutputDebugStringA(" OutOfBounds: ");
-	OutputDebugStringA(to_string(outOfBounds).c_str());
-	OutputDebugStringA("\n");
-	string s = "Movement Direction X: " + to_string(direction.x) + "Y: " + to_string(direction.y) + "\n";
-	OutputDebugStringA(s.c_str());
 	bool moveThis = false;
+	// If the collision check was successful
 	if (success && !outOfBounds)
 	{
-		OutputDebugStringA("Collision and may move");
-		//string st = (" Entity type: ") + ("User" ? e->getEntityType() == User : "Movable");
-		string st = to_string(e->isUser);
-		OutputDebugStringA(("\n\t"+st).c_str());
+		// If the entity obtained is a possessable entity
 		if (e->getEntityType() == User)
 		{
-			OutputDebugStringA("\nPushing a possessable");
 			if (((Player*)e)->canWin() && entity->isPossessed())
 			{
 				moveThis = true;
@@ -954,16 +821,15 @@ bool Scene::push(Entity* entity, glm::ivec2& direction)
 			}
 			else if (e->stops())
 			{
-				OutputDebugStringA("\nCant friggin push man, it stops");
 				return false;
 			}
 			else if (e->isPushable() && push(e, direction))
 			{
-				OutputDebugStringA("\nThas a pushable");
 				moveThis = true;
 			}
 
 		}
+		// If the entity obtained is a movable block
 		else if (e->getEntityType() == MoveBlock)
 		{
 			if (e->canSink())
@@ -977,26 +843,17 @@ bool Scene::push(Entity* entity, glm::ivec2& direction)
 				needToRecheckRules = true;
 			}
 		}
-		else if (e->getEntityType() == User)
-		{
-
-		}
 	}
+	// If out of bounds, dont move
 	else if (success && outOfBounds) {
-		OutputDebugStringA("Collision and out of bounds");
 		return false;
 	}
+	// If nothing was detected, move
 	else if (!success){
-		OutputDebugStringA("No collision, moves right away\n");
 		moveThis = true;
-		//entity->move(direction);
-		//map->moveEntity(entity->getGridPos(), entity->getGridPos()+direction);
-		////entity->setGridPos(entity->getGridPos() + direction);
-		//string s = "Moves to X: " + to_string(entity->getGridPos().x) + "Y: " + to_string(entity->getGridPos().y) + "\n";
-		//OutputDebugStringA(s.c_str());
-		//return true;
 	}
 
+	// Movement processing
 	if (moveThis)
 	{
 		switch (entity->getEntityType()) {
@@ -1018,6 +875,7 @@ bool Scene::push(Entity* entity, glm::ivec2& direction)
 	return false;
 }
 
+// This function handles the event of completing a level
 void Scene::levelCompleted()
 {
 	completed = true;
@@ -1025,6 +883,7 @@ void Scene::levelCompleted()
 	Game::instance().levelCompletedEvent(this->levelId);
 }
 
+// This function renders the completed level text
 void Scene::renderLevelCompletedText() {
 	string st = "Level Complete!";
 	levelCompletedText.render(st, glm::vec2((glutGet(GLUT_WINDOW_WIDTH) / 2)  - 200, glutGet(GLUT_WINDOW_HEIGHT) / 2), 50, glm::vec4(1, 1, 1, 1));
@@ -1040,12 +899,9 @@ void Scene::render()
 	texProgram.setUniformMatrix4f("projection", projection);
 	texProgram.setUniform4f("color", 1.0f, 1.0f, 1.0f, 1.0f);
 	modelview = glm::mat4(1.0f);
-	//modelview = glm::scale(modelview, glm::vec3(Game::instance().aspectRatio, Game::instance().aspectRatio,1));
 	modelview = glm::translate(modelview, glm::vec3(abs(glutGet(GLUT_WINDOW_WIDTH)/2)-SCREEN_WIDTH/2, abs(glutGet(GLUT_WINDOW_HEIGHT)/2)-SCREEN_HEIGHT/2,0));
 	texProgram.setUniformMatrix4f("modelview", modelview);
 	texProgram.setUniform2f("texCoordDispl", 0.f, 0.f);
-	//yaga->render();
-	//interactable->render();
 
 	map->render();
 
@@ -1064,17 +920,6 @@ void Scene::render()
 	{
 			renderLevelCompletedText();
 	}
-
-	/*for (int i = 0; i < walls.size(); i++)
-	{
-		walls[i]->render();
-		
-	}
-	for (int i = 0; i < movables.size(); i++)
-	{
-		movables[i]->render();
-	}
-	baba->render();*/
 
 }
 

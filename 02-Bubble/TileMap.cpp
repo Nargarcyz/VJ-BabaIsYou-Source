@@ -37,71 +37,44 @@ void TileMap::free()
 	glDeleteBuffers(1, &vbo);
 }
 
+// Adds an entity to the collision map in a given position
 void TileMap::addEntity(int x, int y, Entity* ent)
 {
 	gridMap[y * gridMapSize.x + x] = ent;
 }
+// Moves an entity from a source to a destination position in the collision grid
 void TileMap::moveEntity(glm::ivec2 src, glm::ivec2 dest) {
 	gridMap[dest.x + gridMapSize.x * dest.y] = gridMap[src.x + gridMapSize.x * src.y];
 	gridMap[src.x + gridMapSize.x * src.y] = NULL;
 }
+
+// Removes an entity from the collision map from a source position
 void TileMap::removeEntity(glm::ivec2 src) {
 	if (gridMap[src.x + gridMapSize.x * src.y] != NULL && gridMap[src.x + gridMapSize.x * src.y]->getEntityType() != MoveBlock)
 	{
 		gridMap[src.x + gridMapSize.x * src.y] = NULL;
 	}
 }
-
+// Scans a position for an entity in the collision grid. Checks for success in detection of anything,
+// and specifies if it is out of bounds, or if it is an entity
 Entity* TileMap::getEntity(glm::ivec2 testPosition, bool& success, bool& outOfBounds) {
-	//string s = typeid(gridMap[x * mapSize.x + y]).name();
+
 	int x = testPosition.x;
 	int y = testPosition.y;
 	string s = "\nChecking X: " + to_string(x) + "Y: " + to_string(y);
 	OutputDebugStringA(s.c_str());
-	/*s = "\nMax X: " + to_string(gridMapSize.x) + " Max Y : " + to_string(gridMapSize.y);
-	OutputDebugStringA(s.c_str());*/
 
-	//if (x<0 || x>mapSize.x || y<0 || y>mapSize.y)
 	outOfBounds = false;
-	//if (x<0 || (x>(gridMapSize.x -(gridMapSize.x % tileSize)) / tileSize) || y<0 || (y > (gridMapSize.y-tileSize) / tileSize))
-	/*if (x < 0)
-	{
-		OutputDebugStringA("\nOut left");
-	}
-	else if (x > (gridMapSize.x - 1))
-	{
-		OutputDebugStringA("\nOut right");
-	}
-	else if (y < 0)
-	{
-		OutputDebugStringA("\nOut up");
-	}
-	else if (y > (gridMapSize.y - 1))
-	{
-		OutputDebugStringA("\nOut down");
-	}*/
 	if (x < 0 || (x > (gridMapSize.x-1)) || y < 0 || (y > (gridMapSize.y-1)))
 	{
 		success = true;
 		outOfBounds = true;
-		//OutputDebugStringA("\nOut of bounds");
 		return NULL;
 	}else if (gridMap[x + gridMapSize.x * y] == NULL)
 	{
-		//OutputDebugStringA("\nNo entity detected");
 		success = false;
 		return NULL;
 	} else if (gridMap[x + gridMapSize.x * y] != NULL) {
-		/*OutputDebugStringA("\nEntity detected at");
-		OutputDebugStringA(to_string(x).c_str());
-		OutputDebugStringA(",");
-		OutputDebugStringA(to_string(y).c_str());
-		OutputDebugStringA("\n");
-		OutputDebugStringA("\nEntity data: ");
-		OutputDebugStringA(to_string(gridMap[y * gridMapSize.x + x]->getGridPos().x).c_str());
-		OutputDebugStringA(",");
-		OutputDebugStringA(to_string(gridMap[y * gridMapSize.x + x]->getGridPos().y).c_str());
-		OutputDebugStringA("\n");*/
 		success = true;
 		return gridMap[x + gridMapSize.x * y];
 	}
@@ -140,7 +113,6 @@ bool TileMap::loadLevel(const string& levelFile)
 	tileTexSize = glm::vec2(1.f / tilesheetSize.x, 1.f / tilesheetSize.y);
 
 	map = new int[mapSize.x * mapSize.y];
-	//gridMap = new Entity*[mapSize.x * mapSize.y];
 	for (int j = 0; j < mapSize.y; j++)
 	{
 		for (int i = 0; i < mapSize.x; i++)
@@ -157,54 +129,14 @@ bool TileMap::loadLevel(const string& levelFile)
 			if (std::stoi(number) == ' ' || std::stoi(number) == 0)
 				map[j * mapSize.x + i] = 0;
 			else
-				//map[j * mapSize.x + i] = tile - int('0');
 				map[j * mapSize.x + i] = std::stoi(number);
-			//fin.get(tile);
 		}
-		//fin.get(tile);
-#ifndef _WIN32
-		fin.get(tile);
-#endif
 	}
 
-	OutputDebugStringA("\nObtained map:");
-	for (int j = 0; j < mapSize.y; j++)
-	{
-		for (int i = 0; i < mapSize.x; i++)
-		{
-			OutputDebugStringA( (to_string(map[j * mapSize.x + i])+" ").c_str() );
-		}
-		OutputDebugStringA("\n");
-		
-	}
-
-
+	// Creates a collision map
 	gridMapSize = glm::ivec2(floor(glutGet(GLUT_WINDOW_WIDTH) / tileSize), floor(glutGet(GLUT_WINDOW_HEIGHT) / tileSize));
-	//gridMapSize = glm::ivec2(21,20);
-	//gridMap = new Entity * [floor(glutGet(GLUT_WINDOW_WIDTH) / tileSize) * floor(glutGet(GLUT_WINDOW_HEIGHT) / tileSize)]{ NULL };
 	gridMap = new Entity * [gridMapSize.x * gridMapSize.y]{ NULL };
 
-
-	OutputDebugStringA("\TILEMAP SIZE");
-	OutputDebugStringA(to_string(gridMapSize.x).c_str());
-	OutputDebugStringA(",");
-	OutputDebugStringA(to_string(gridMapSize.y).c_str());
-	/*for (int i = 0; i < gridMapSize.x * gridMapSize.y; i++)
-	{
-		gridMap[i] = NULL;
-	}*/
-	/*gridMap = new Entity * [mapSize.x * mapSize.y]{ NULL };*/
-	/*for (int j = 0; j < glutGet(GLUT_WINDOW_HEIGHT) / tileSize; j++)
-	{
-		for (int i = 0; i < glutGet(GLUT_WINDOW_WIDTH) / tileSize; i++)
-		{
-			gridMap[j * mapSize.x + i] = NULL;
-		}
-	}*/
-	/*for (int i = 0; i < sizeof(gridMap); i++)
-	{
-		gridMap[i] = NULL;
-	}*/
 	fin.close();
 
 	return true;
@@ -276,9 +208,7 @@ void TileMap::prepareArrays(const glm::vec2& minCoords, ShaderProgram& program)
 	texCoordLocation = program.bindVertexAttribute("texCoord", 2, 4 * sizeof(float), (void*)(2 * sizeof(float)));
 }
 
-// Collision tests for axis aligned bounding boxes.
-// Method collisionMoveDown also corrects Y coordinate if the box is
-// already intersecting a tile below.
+
 
 glm::vec2 TileMap::getMapSize()
 {

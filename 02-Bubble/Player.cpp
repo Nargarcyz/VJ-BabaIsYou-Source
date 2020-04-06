@@ -16,39 +16,6 @@ enum PlayerAnims
 	STAND_RIGHT = 0, STAND_UP = 5, STAND_LEFT = 10, STAND_DOWN = 15
 };
 
-//string Player::getInfo()
-//{
-//	string info = "Player Type: " + to_string(type) + "\n -isStop = " + std::to_string(isStop) + "\n - bJumping = " + std::to_string(bJumping) + "\n - bMoving = " + std::to_string(bMoving);
-//	return info;
-//}
-
-
-
-//void Player::changePlayerType(PlayerType type)
-//{
-//	this->type = type;
-//	switch (type)
-//	{
-//	case Baba:
-//		spriteFile = "images/bub.png";
-//		spriteTCoords = glm::vec2(.25f, .25f);
-//		break;
-//	case Wall:
-//		spriteFile = "images/Wall.png";
-//		spriteTCoords = glm::vec2(1, 1);
-//		break;
-//	default:
-//		break;
-//	}
-//
-//}
-//
-//
-//PlayerType Player::getPlayerType()
-//{
-//	return type;
-//}
-
 Player::Player()
 {
 	this->type = Baba_p;
@@ -143,14 +110,14 @@ void Player::init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram, co
 	moveDestination = glm::ivec2(NULL, NULL);
 
 	this->spriteSize = spriteSize;
-	//spritesheet.loadFromFile("images/bub.png", TEXTURE_PIXEL_FORMAT_RGBA);
+
 	entityType = (EntityType)0;
 	isUser = true;
 
 	switch (type)
 	{
 	case Baba_p: {
-		//spriteFile = "images/baba.png";
+
 		spritesheet.loadFromFile(spriteFile, TEXTURE_PIXEL_FORMAT_RGBA);
 		sprite = Sprite::createSprite(this->spriteSize, glm::vec2(.05, 0.33), &spritesheet, &shaderProgram);
 		int animWidth = 20;

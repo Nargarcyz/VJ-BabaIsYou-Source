@@ -45,8 +45,6 @@ void LevelSelection::initShaders()
 
 void LevelSelection::init() {
 	initShaders();
-
-	//projection = glm::ortho(0.f, float(glutGet(GLUT_WINDOW_WIDTH) - 1), float(glutGet(GLUT_WINDOW_HEIGHT) - 1), 0.f);
 	currentTime = 0.0f;
 	clickedTime = 0.0f;
 
@@ -98,17 +96,6 @@ void LevelSelection::update(int deltaTime)
 void drawSquare(double x1, double y1, double sidelength)
 {
 	double halfside = sidelength / 2;
-
-	/*glColor3d(1, 1, 1);
-	glBegin(GL_POLYGON);
-
-	glVertex2d(x1 + halfside, y1 + halfside);
-	glVertex2d(x1 + halfside, y1 - halfside);
-	glVertex2d(x1 - halfside, y1 - halfside);
-	glVertex2d(x1 - halfside, y1 + halfside);
-
-	glEnd();*/
-
 	glPointSize(5.0f);
 	glColor3f(1, 1, 1);
 	glBegin(GL_POINTS);
@@ -131,7 +118,6 @@ void LevelSelection::render()
 	
 	glm::vec2 lvlPos = glm::vec2(100, 100);
 	int offset = 20;
-	//drawSquare((lvlPos.x + 10) + offset * selectedLevel, (lvlPos.y-10) + offset * selectedLevel, 20);
 
 	for (int i = 0; i < levels; i++)
 	{	

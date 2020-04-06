@@ -24,7 +24,6 @@ void Movable::init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram, c
 	moveDestination = glm::ivec2(NULL, NULL);
 	
 	this->spriteSize = spriteSize;
-	//spritesheet.loadFromFile("images/bub.png", TEXTURE_PIXEL_FORMAT_RGBA);
 	string file = "images/";
 	switch (wordType)
 	{

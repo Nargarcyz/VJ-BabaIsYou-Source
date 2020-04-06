@@ -36,7 +36,6 @@ public:
 
 	bool isLevelCompleted(int levelId);
 	bool isLevelUnlocked(int levelId);
-	//void changeActiveLevel(int levelId);
 	
 	bool update(int deltaTime);
 	void render();

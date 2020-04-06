@@ -23,15 +23,11 @@ public:
 	Scene(int levelId);
 	~Scene();
 
-	void switchPos(int key);
 	void init(const string levelFile);
 	bool createInstances(const string& levelFile);
 	void extractEntities();
 	void applyRule(Objects obj, Properties prop);
-	//void applyRule(vector<Objects>* objs, vector<Relations*> rel, vector<Properties*> prop);
-	void applyRule(Objects obj, Relations rel, Properties prop);
 	void checkRules();
-	void changePossession(PlayerType newPlayer);
 	void update(int deltaTime);
 	void render();
 	bool push(Entity* entity, glm::ivec2& direction);

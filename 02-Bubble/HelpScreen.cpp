@@ -98,9 +98,6 @@ void HelpScreen::render()
 	texProgram.use();
 	texProgram.setUniformMatrix4f("projection", projection);
 	texProgram.setUniform4f("color", 1.0f, 1.0f, 1.0f, 1.0f);
-	/*modelview = glm::mat4(1.0f);
-	texProgram.setUniformMatrix4f("modelview", modelview);
-	texProgram.setUniform2f("texCoordDispl", 0.f, 0.f);*/
 
 	float scaleFactor = (glm::sin(currentTime / 1000) / 5 + 2) * 10;
 	backText.render("[Backspace] <- Go Back to Main Menu", glm::vec2(0, scaleFactor), scaleFactor, glm::vec4(1, 1, 1, 1));
