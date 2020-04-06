@@ -48,7 +48,7 @@ void Game::init()
 
 void Game::levelCompletedEvent(int levelId) {
 	completedLevels[levelId - 1] = 1;
-	if (levelId <= levels)
+	if (levelId < levels)
 	{
 		unlockedLevels[levelId] = 1;
 	}
