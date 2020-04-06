@@ -34,6 +34,7 @@ public:
 
 	void levelCompleted();
 	void renderLevelCompletedText();
+	void renderRestartSuggestion();
 
 private:
 	void initShaders();
@@ -55,11 +56,13 @@ private:
 	float currentTime, clickedTime, completedTime;
 	glm::mat4 projection;
 	bool completed = false;
+	bool failed = false;
 	bool noPossession = false;
 	bool needToRecheckRules = false;
+	bool suggestRestart = false;
 	int levelId;
 
-	Text levelCompletedText;
+	Text levelCompletedText, restartText;
 
 };
 

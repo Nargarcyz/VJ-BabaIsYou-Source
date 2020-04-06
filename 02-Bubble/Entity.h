@@ -59,7 +59,7 @@ public:
 	string spriteFile = "images/bub.png";
 	glm::vec2 spriteTCoords = glm::vec2(.25f, .25f);
 	bool isStop = false;
-	float fMoveSpeed = 0.007f;
+	float fMoveSpeed = 0.01f;
 	float fMoveFraction;
 	glm::ivec2 moveDestination;
 	glm::ivec2 tileMapDispl, posPlayer;

@@ -531,6 +531,8 @@ void Scene::init(const string levelFile)
 	initShaders();
 	if (!levelCompletedText.init("fonts/OpenSans-Regular.ttf"))
 		cout << "Could not load font!!!" << endl;
+	if (!restartText.init("fonts/OpenSans-Regular.ttf"))
+		cout << "Could not load font!!!" << endl;
 
 	map = TileMap::createTileMap(levelFile, glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
 	//createInstances(levelFile);
@@ -622,22 +624,7 @@ void Scene::update(int deltaTime)
 	// If any entity is moving, don't process further to ensure stability
 	if (moving) return;
 
-	// LEVEL FAILED: This conditional ensures that the level reaches a failed state, by disabling user interaction of the level
-	// and playing the fail music
-	if (noPossession)
-	{
-
-		if (Game::instance().backgroundMusic->getSoundSource() != Game::instance().deadMusic)
-		{
-			Game::instance().soundEngine->stopAllSoundsOfSoundSource(Game::instance().levelMusic);
-			Game::instance().backgroundMusic = Game::instance().soundEngine->play2D(Game::instance().deadMusic, true, false, true);
-		}
-
-		if (Game::instance().getKey(8)) {
-			Game::instance().changeActiveScene(-1);
-		}
-		return;
-	}
+	
 
 	// LEVEL COMPLETED: This conditional ensures that the level reaches a win state, by disabling user interaction of the level
 	// and playing the win music, as well as unlocking the next level
@@ -659,6 +646,31 @@ void Scene::update(int deltaTime)
 		}
 	
 
+		return;
+	}
+
+	// LEVEL FAILED: This conditional ensures that the level reaches a failed state, by disabling user interaction of the level
+	// and playing the fail music
+	if (noPossession)
+	{
+		if (!failed)
+		{
+			failed = true;
+			completedTime = currentTime;
+		}
+
+		if (Game::instance().backgroundMusic->getSoundSource() != Game::instance().deadMusic)
+		{
+			Game::instance().soundEngine->stopAllSoundsOfSoundSource(Game::instance().levelMusic);
+			Game::instance().backgroundMusic = Game::instance().soundEngine->play2D(Game::instance().deadMusic, true, false, true);
+		}
+		if (currentTime-completedTime>5000 && !suggestRestart)
+		{
+			suggestRestart = true;
+		}
+		if (Game::instance().getKey(8)) {
+			Game::instance().changeActiveScene(-1);
+		}
 		return;
 	}
 
@@ -903,6 +915,12 @@ void Scene::renderLevelCompletedText() {
 	levelCompletedText.render(st, glm::vec2((glutGet(GLUT_WINDOW_WIDTH) / 2)  - 200, glutGet(GLUT_WINDOW_HEIGHT) / 2), 50, glm::vec4(1, 1, 1, 1));
 }
 
+void Scene::renderRestartSuggestion()
+{
+	string st = "[Backspace] <- Go to level selection";
+	levelCompletedText.render(st, glm::vec2(0, 50), 20, glm::vec4(1, 1, 1, 1));
+}
+
 
 void Scene::render()
 {
@@ -932,7 +950,11 @@ void Scene::render()
 	modelview = glm::mat4(1.0f);
 	if (completed)
 	{
-			renderLevelCompletedText();
+		renderLevelCompletedText();
+	}
+	if (suggestRestart)
+	{
+		renderRestartSuggestion();
 	}
 
 }

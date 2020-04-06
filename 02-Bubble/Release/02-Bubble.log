@@ -1,6 +1,59 @@
-﻿  TileMap.cpp
+﻿  Entity.cpp
+  Game.cpp
+d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Game.cpp(15,43): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+  HelpScreen.cpp
+d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\HelpScreen.cpp(108,20): warning C4018: '<': signed/unsigned mismatch
+  LevelSelection.cpp
+d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\LevelSelection.cpp(102,17): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
+d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\LevelSelection.cpp(102,13): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
+d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\LevelSelection.cpp(109,49): warning C4305: 'argument': truncation from 'double' to 'GLclampf'
+  Movable.cpp
+  Player.cpp
+  Scene.cpp
+d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(112,29): warning C4244: 'argument': conversion from 'T' to 'int', possible loss of data
+          with
+          [
+              T=float
+          ]
+d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(112,22): warning C4244: 'argument': conversion from 'T' to 'int', possible loss of data
+          with
+          [
+              T=float
+          ]
+d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(74,17): warning C4101: 'it': unreferenced local variable
+d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(120,8): warning C4101: 'type': unreferenced local variable
+d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(223,20): warning C4018: '<': signed/unsigned mismatch
+d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(264,20): warning C4018: '<': signed/unsigned mismatch
+d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(267,20): warning C4018: '<': signed/unsigned mismatch
+d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(271,20): warning C4018: '<': signed/unsigned mismatch
+d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(285,20): warning C4018: '<': signed/unsigned mismatch
+d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(296,23): warning C4018: '<': signed/unsigned mismatch
+d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(325,48): warning C4018: '<': signed/unsigned mismatch
+d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(348,23): warning C4018: '<': signed/unsigned mismatch
+d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(377,50): warning C4018: '<': signed/unsigned mismatch
+d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(281,12): warning C4101: 'rel': unreferenced local variable
+d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(564,20): warning C4018: '<': signed/unsigned mismatch
+d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(577,20): warning C4018: '<': signed/unsigned mismatch
+d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(587,20): warning C4018: '<': signed/unsigned mismatch
+d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(600,20): warning C4018: '<': signed/unsigned mismatch
+d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(602,21): warning C4018: '<': signed/unsigned mismatch
+d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(613,20): warning C4018: '<': signed/unsigned mismatch
+d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(730,21): warning C4018: '<': signed/unsigned mismatch
+d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(782,21): warning C4018: '<': signed/unsigned mismatch
+d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(786,23): warning C4018: '<': signed/unsigned mismatch
+d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(846,24): warning C4129: 'C': unrecognized character escape sequence
+d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(940,20): warning C4018: '<': signed/unsigned mismatch
+d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(945,20): warning C4018: '<': signed/unsigned mismatch
+  Sprite.cpp
+  TextScene.cpp
+d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\TextScene.cpp(42,19): warning C4305: '=': truncation from 'double' to 'float'
+d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\TextScene.cpp(160,43): warning C4305: 'argument': truncation from 'double' to 'GLclampf'
+  TileMap.cpp
 d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\TileMap.cpp(147,75): warning C4305: 'argument': truncation from 'double' to 'GLclampf'
+  main.cpp
+  Generating Code...
 d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\TileMap.cpp(81): warning C4715: 'TileMap::getEntity': not all control paths return a value
+d:\Documents\Coding\VJ\VJ-BabaIsYou\02-Bubble\Scene.cpp(152): warning C4715: 'Scene::createInstances': not all control paths return a value
 LINK : warning LNK4075: ignoring '/INCREMENTAL' due to '/OPT:ICF' specification
 SOIL.lib(SOIL.obj) : warning LNK4075: ignoring '/EDITANDCONTINUE' due to '/OPT:ICF' specification
 LINK : warning LNK4098: defaultlib 'MSVCRTD' conflicts with use of other libs; use /NODEFAULTLIB:library
